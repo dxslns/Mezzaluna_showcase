@@ -1,0 +1,1596 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-PWBVFG5DVZ"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+        gtag('config', 'G-PWBVFG5DVZ');
+    </script>
+    <link rel="icon" href="PNGs/favicon5.ico">
+    <meta charset="UTF-8">
+    <title>Notification History</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.1/aos.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            padding: 20px;
+            margin: 0;
+            background: #0a0a0a;
+            color: #f0f0f0;
+            background-image: url('PNGs/pic2.png');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            min-height: 100vh;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 24px;
+            margin-bottom: 24px;
+            color: black;
+            text-shadow: 0 2px 8px rgba(0,0,0,0.5);
+            font-weight: 700;
+        }
+
+        .header-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        /* пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ SELECT ALL пїЅпїЅпїЅпїЅпїЅпїЅпїЅ */
+        .select-all-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: #ffffff;
+            cursor: pointer;
+            padding: 10px 16px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            transition: all 0.3s ease;
+            user-select: none;
+        }
+
+            .select-all-container:hover {
+                background: rgba(255, 255, 255, 0.08);
+                border-color: rgba(255, 255, 255, 0.15);
+                transform: translateY(-1px);
+            }
+
+            .select-all-container label {
+                cursor: pointer;
+                font-weight: 600;
+                font-size: 15px;
+                color: #ffffff;
+                transition: color 0.3s ease;
+            }
+
+        /* пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ */
+        #select-all-checkbox {
+            display: none;
+        }
+
+        /* пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ */
+        .select-all-container .custom-checkbox {
+            position: relative;
+            width: 22px;
+            height: 22px;
+            border-radius: 7px;
+            background: rgba(64, 156, 255, 0.1);
+            border: 2px solid rgba(64, 156, 255, 0.3);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .select-all-container:hover .custom-checkbox {
+            border-color: rgba(64, 156, 255, 0.5);
+            background: rgba(64, 156, 255, 0.15);
+        }
+
+        /* пїЅпїЅпїЅпїЅпїЅпїЅпїЅ */
+        .select-all-container .custom-checkbox::after {
+            content: '';
+            position: absolute;
+            width: 10px;
+            height: 6px;
+            border-left: 2px solid transparent;
+            border-bottom: 2px solid transparent;
+            transform: rotate(-45deg);
+            transition: all 0.3s ease;
+            opacity: 0;
+        }
+
+        /* пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ */
+        #select-all-checkbox:checked + .custom-checkbox {
+            background: linear-gradient(135deg, #409CFF, #2d87ff);
+            border-color: #409CFF;
+            box-shadow: 0 4px 15px rgba(64, 156, 255, 0.3);
+        }
+
+            #select-all-checkbox:checked + .custom-checkbox::after {
+                border-color: white;
+                opacity: 1;
+            }
+
+            /* пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ */
+            #select-all-checkbox:checked + .custom-checkbox::after {
+                animation: checkmark 0.3s ease forwards;
+            }
+
+        @keyframes checkmark {
+            0% {
+                opacity: 0;
+                transform: rotate(-45deg) scale(0.5);
+            }
+
+            100% {
+                opacity: 1;
+                transform: rotate(-45deg) scale(1);
+            }
+        }
+
+        /* пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ JavaScript */
+        .custom-checkbox.checked {
+            background: linear-gradient(135deg, #409CFF, #2d87ff);
+            border-color: #409CFF;
+            box-shadow: 0 4px 15px rgba(64, 156, 255, 0.3);
+        }
+
+            .custom-checkbox.checked::after {
+                border-color: white;
+                opacity: 1;
+            }
+
+        .delete-selected-btn {
+            background: linear-gradient(135deg, #ff4757, #ff3838);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            display: none;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(255, 71, 87, 0.3);
+        }
+
+            .delete-selected-btn:hover {
+                background: linear-gradient(135deg, #ff3838, #ff1e1e);
+                transform: translateY(-2px);
+                box-shadow: 0 6px 20px rgba(255, 71, 87, 0.4);
+            }
+
+            .delete-selected-btn.visible {
+                display: block;
+            }
+
+        /* пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ */
+        .notification {
+            background: rgba(20, 20, 25, 0.85);
+            backdrop-filter: blur(12px);
+            padding: 16px;
+            margin-bottom: 12px;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            transition: all 0.25s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+            .notification:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 6px 24px rgba(0, 0, 0, 0.4);
+                background: rgba(25, 25, 30, 0.9);
+            }
+
+            .notification.selected {
+                background: rgba(30, 60, 90, 0.85);
+                border-color: rgba(64, 156, 255, 0.3);
+            }
+
+        .notification-header-compact {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            gap: 12px;
+        }
+
+        .notification-title-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .notification-date-badge {
+            background: rgba(64, 156, 255, 0.15);
+            color: #409CFF;
+            padding: 4px 10px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 600;
+            border: 1px solid rgba(64, 156, 255, 0.2);
+        }
+
+        .notification-symptoms-count {
+            background: rgba(255, 107, 129, 0.15);
+            color: #ff6b81;
+            padding: 4px 10px;
+            border-radius: 10px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .notification-checkbox {
+            transform: scale(1.1);
+            accent-color: #409CFF;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        /* пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ */
+        .recommendations-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin: 12px 0;
+        }
+
+        .recommendation-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.07);
+            border-radius: 12px;
+            padding: 12px;
+            transition: all 0.2s ease;
+        }
+
+            .recommendation-card:hover {
+                background: rgba(255, 255, 255, 0.08);
+                border-color: rgba(255, 255, 255, 0.12);
+                transform: translateX(2px);
+            }
+
+        .recommendation-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+
+        .recommendation-title {
+            font-weight: 600;
+            color: #ffffff;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .recommendation-icon {
+            color: #409CFF;
+            font-size: 12px;
+        }
+
+        .recommendation-description {
+            color: #b0b0b0;
+            font-size: 12px;
+            line-height: 1.4;
+            margin-bottom: 8px;
+        }
+
+        .symptom-buttons-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 8px;
+        }
+
+        .symptom-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(64, 156, 255, 0.1);
+            color: #409CFF;
+            text-decoration: none;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            border: 1px solid rgba(64, 156, 255, 0.2);
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+            .symptom-button:hover {
+                background: rgba(64, 156, 255, 0.2);
+                transform: translateY(-1px);
+                box-shadow: 0 4px 12px rgba(64, 156, 255, 0.15);
+            }
+
+        .notification-footer-compact {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 12px;
+            margin-top: 12px;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .notification-time {
+            color: #888;
+            font-size: 11px;
+            font-weight: 400;
+        }
+
+        .notification-actions-compact {
+            display: flex;
+            gap: 6px;
+        }
+
+        .delete-btn-compact {
+            background: rgba(255, 71, 87, 0.1);
+            border: 1px solid rgba(255, 71, 87, 0.2);
+            cursor: pointer;
+            padding: 6px;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+            .delete-btn-compact:hover {
+                background: rgba(255, 71, 87, 0.2);
+                transform: scale(1.05);
+            }
+
+            .delete-btn-compact svg {
+                width: 16px;
+                height: 16px;
+                fill: #ff6b81;
+            }
+
+        /* пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ */
+        .no-recommendations {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 10px;
+            padding: 12px;
+            margin: 12px 0;
+            text-align: center;
+            color: #888;
+            font-size: 13px;
+            border: 1px dashed rgba(255, 255, 255, 0.05);
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0,0,0,0.7);
+            backdrop-filter: blur(4px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 999;
+            display: none;
+        }
+
+        .modal {
+            background: rgba(20, 20, 25, 0.95);
+            backdrop-filter: blur(20px);
+            padding: 28px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+            max-width: 90%;
+            width: 340px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+            .modal p {
+                margin-bottom: 24px;
+                font-size: 16px;
+                line-height: 1.6;
+                color: #ffffff;
+                font-weight: 500;
+            }
+
+        .modal-buttons {
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+        }
+
+        .modal button {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            flex: 1;
+            transition: all 0.3s ease;
+        }
+
+        .modal .cancel-btn {
+            background: rgba(255, 255, 255, 0.1);
+            color: #ffffff;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+            .modal .cancel-btn:hover {
+                background: rgba(255, 255, 255, 0.15);
+                border-color: rgba(255, 255, 255, 0.3);
+                transform: translateY(-2px);
+            }
+
+        .modal .confirm-btn {
+            background: linear-gradient(135deg, #ff4757, #ff3838);
+            color: white;
+            border: none;
+            box-shadow: 0 4px 15px rgba(255, 71, 87, 0.3);
+        }
+
+            .modal .confirm-btn:hover {
+                background: linear-gradient(135deg, #ff3838, #ff1e1e);
+                transform: translateY(-2px);
+                box-shadow: 0 6px 20px rgba(255, 71, 87, 0.4);
+            }
+
+        .empty-state {
+            text-align: center;
+            color: #ffffff;
+            padding: 60px 0;
+            font-size: 18px;
+            font-weight: 500;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .loading-spinner {
+            display: inline-block;
+            width: 24px;
+            height: 24px;
+            border: 3px solid rgba(255, 255, 255, 0.1);
+            border-top: 3px solid #409CFF;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ */
+        @media (max-width: 600px) {
+            body {
+                padding: 16px;
+            }
+
+            h1 {
+                font-size: 20px;
+            }
+
+            .header-controls {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .select-all-container {
+                padding: 8px 14px;
+                gap: 10px;
+            }
+
+                .select-all-container label {
+                    font-size: 14px;
+                }
+
+                .select-all-container .custom-checkbox {
+                    width: 20px;
+                    height: 20px;
+                }
+
+                    .select-all-container .custom-checkbox::after {
+                        width: 9px;
+                        height: 5px;
+                    }
+
+            .notification {
+                padding: 14px;
+                border-radius: 14px;
+                margin-bottom: 10px;
+            }
+
+            .notification-header-compact {
+                flex-wrap: wrap;
+            }
+
+            .notification-title-row {
+                width: 100%;
+                justify-content: space-between;
+                margin-bottom: 8px;
+            }
+
+            .recommendation-card {
+                padding: 10px;
+            }
+
+            .symptom-buttons-container {
+                gap: 4px;
+            }
+
+            .symptom-button {
+                padding: 5px 10px;
+                font-size: 11px;
+                flex-grow: 1;
+                justify-content: center;
+            }
+
+            .notification-footer-compact {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 10px;
+            }
+
+            .notification-actions-compact {
+                align-self: flex-end;
+            }
+
+            .modal {
+                padding: 20px;
+                margin: 16px;
+            }
+        }
+
+        .toast {
+            background: rgba(20, 20, 25, 0.95);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+        }
+    </style>
+</head>
+<body>
+
+    <h1 data-aos="fade-down" style="font-size: 30px;">Notification History</h1>
+
+    <div class="header-controls">
+        <!-- пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ SELECT ALL пїЅпїЅпїЅпїЅпїЅпїЅпїЅ -->
+        <div class="select-all-container" onclick="toggleSelectAllWrapper()">
+            <input type="checkbox" id="select-all-checkbox">
+            <div class="custom-checkbox"></div>
+            <label for="select-all-checkbox">Select All</label>
+        </div>
+        <button id="delete-selected-btn" class="delete-selected-btn" onclick="showBulkDeleteConfirm()">Delete Selected</button>
+    </div>
+
+    <div id="loading-indicator" style="text-align: center; padding: 20px; display: none;">
+        <div class="loading-spinner"></div>
+        <div style="margin-top: 10px; color: #ffffff;">Loading notifications...</div>
+    </div>
+
+    <div id="history-list" data-aos="fade-up"></div>
+
+    <!-- Confirmation Modal -->
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal">
+            <p id="modalText">Are you sure you want to delete this notification?</p>
+            <div class="modal-buttons">
+                <button class="cancel-btn" onclick="closeModal()">Cancel</button>
+                <button class="confirm-btn" onclick="confirmDelete()">Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bulk Delete Modal -->
+    <div class="modal-overlay" id="bulkDeleteModal">
+        <div class="modal">
+            <p id="bulkDeleteText">Are you sure you want to delete selected notifications?</p>
+            <div class="modal-buttons">
+                <button class="cancel-btn" onclick="closeBulkDeleteModal()">Cancel</button>
+                <button class="confirm-btn" onclick="confirmBulkDelete()">Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- AOS JS -->
+    <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
+
+    <script>
+        // пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ API URL
+        function getApiUrl() {
+            const hostname = window.location.hostname;
+            const protocol = window.location.protocol;
+
+            // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ localhost
+            if (hostname === 'localhost' || hostname === '127.0.0.1') {
+                return 'http://localhost:3000/api';
+            }
+
+            // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ - пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
+            return window.location.origin + '/api';
+        }
+
+        const API_URL = getApiUrl();
+        console.log('?? Inbox: API URL determined as:', API_URL);
+
+        let userToken = null;
+        let allNotifications = [];
+        let selectedNotificationIds = [];
+        let autoRefreshInterval = null;
+
+        console.log('?? Inbox script loaded');
+
+        // DOM пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+        const historyList = document.getElementById('history-list');
+        const loadingIndicator = document.getElementById('loading-indicator');
+        const modalOverlay = document.getElementById('modalOverlay');
+        const modalText = document.getElementById('modalText');
+        const bulkDeleteModal = document.getElementById('bulkDeleteModal');
+        const bulkDeleteText = document.getElementById('bulkDeleteText');
+        const deleteSelectedBtn = document.getElementById('delete-selected-btn');
+
+        // пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+        let currentNotificationToDelete = null;
+
+        // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+        const SYMPTOM_MAPPING = {
+            // insomnia -> insomnia.html
+            'insomnia': 'insomnia.html',
+
+            // poor-sleep -> insomnia.html (пїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ)
+            'poor-sleep': 'insomnia.html',
+
+            // early-wakeup -> early-awakenings.html
+            'early-wakeup': 'early-awakenings.html',
+            'early-awakening': 'early-awakenings.html',
+
+            // fragmented-sleep -> fragmented_sleep.html
+            'fragmented-sleep': 'fragmented-sleep.html',
+
+            // difficulty-falling-asleep -> difficulty-falling-asleep.html
+            'difficulty-falling-asleep': 'difficulty-falling-asleep.html',
+
+            // non-restorative-sleep -> non-restorative-sleep.html
+            'non-restorative-sleep': 'non-restorative-sleep.html',
+
+            // daytime-sleepiness -> daytime-sleepiness.html
+            'daytime-sleepiness': 'daytime-sleepiness.html',
+
+            // headache -> headache.html
+            'headache': 'headache.html',
+
+            // fatigue -> fatigue.html
+            'fatigue': 'fatigue.html',
+
+            // dry-skin-mucous -> dry-skin-mucous.html
+            'dry-skin-mucous': 'dry-skin-mucous.html',
+
+            // poor-concentration -> poor-concentration.html
+            'poor-concentration': 'poor-concentration.html',
+
+            // stress -> stress.html
+            'stress': 'stress.html',
+
+            // anxiety -> anxiety.html
+            'anxiety': 'anxiety.html',
+
+            // apathy -> apathy.html
+            'apathy': 'apathy.html',
+
+            // depressive-episode -> depressive-episodes.html
+            'depressive-episode': 'depressive-episodes.html',
+
+            // irritability -> irritability.html
+            'irritability': 'irritability.html',
+
+            // social-isolation -> social-isolation.html
+            'social-isolation': 'social-isolation.html',
+
+            // mood-swings -> mood-swings.html
+            'mood-swings': 'mood-swings.html',
+
+            // sedentary-day -> sedentary-day.html
+            'sedentary-day': 'sedentary-day.html',
+
+            // overtraining -> overtraining.html
+            'overtraining': 'overtraining.html',
+
+            // bad-mood -> bad-mood-activity.html
+            'bad-mood': 'bad-mood-activity.html',
+
+            // reduced-metabolism -> reduced-metabolism.html
+            'reduced-metabolism': 'reduced-metabolism.html',
+
+            // muscle-weakness -> muscle-weakness.html
+            'muscle-weakness': 'muscle-weakness.html',
+
+            // increased-stress -> increased-stress-activity.html
+            'increased-stress': 'increased-stress-activity.html',
+
+            // chronic-fatigue -> chronic-fatigue.html
+            'chronic-fatigue': 'chronic-fatigue.html'
+        };
+
+        // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ (пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ)
+        const SYMPTOM_GROUPING = {
+            'insomnia.html': ['insomnia', 'poor-sleep'],
+            'early-awakenings.html': ['early-wakeup', 'early-awakening', 'early awakenings'],
+            'fragmented-sleep.html': ['fragmented-sleep', 'fragmented sleep'],
+            'difficulty-falling-asleep.html': ['difficulty-falling-asleep', 'difficulty falling asleep'],
+            'non-restorative-sleep.html': ['non-restorative-sleep', 'non restorative sleep'],
+            'daytime-sleepiness.html': ['daytime-sleepiness', 'daytime sleepiness'],
+            'headache.html': ['headache'],
+            'fatigue.html': ['fatigue'],
+            'dry-skin-mucous.html': ['dry-skin-mucous', 'dry skin mucous', 'dry skin'],
+            'poor-concentration.html': ['poor-concentration', 'poor concentration'],
+            'stress.html': ['stress'],
+            'anxiety.html': ['anxiety'],
+            'apathy.html': ['apathy'],
+            'depressive-episodes.html': ['depressive-episode', 'depressive episode'],
+            'irritability.html': ['irritability'],
+            'social-isolation.html': ['social-isolation', 'social isolation'],
+            'mood-swings.html': ['mood-swings', 'mood swings'],
+            'sedentary-day.html': ['sedentary-day', 'sedentary day'],
+            'overtraining.html': ['overtraining'],
+            'bad-mood-activity.html': ['bad-mood', 'bad mood'],
+            'reduced-metabolism.html': ['reduced-metabolism', 'reduced metabolism'],
+            'muscle-weakness.html': ['muscle-weakness', 'muscle weakness'],
+            'increased-stress-activity.html': ['increased-stress', 'increased stress'],
+            'chronic-fatigue.html': ['chronic-fatigue', 'chronic fatigue']
+        };
+
+        // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+        document.addEventListener('DOMContentLoaded', function () {
+            console.log('?? DOM loaded, initializing inbox...');
+
+            // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+            if (typeof AOS !== 'undefined') {
+                AOS.init({
+                    duration: 600,
+                    once: true
+                });
+            }
+
+            // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
+            userToken = localStorage.getItem('token');
+            console.log('?? User token exists:', !!userToken);
+
+            if (!userToken) {
+                showEmptyState('Please login to view notifications');
+                console.log('? No token, showing empty state');
+                return;
+            }
+
+            loadNotifications();
+            setupEventListeners();
+            startAutoRefresh();
+        });
+
+        // пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ Select All
+        function toggleSelectAllWrapper() {
+            const checkbox = document.getElementById('select-all-checkbox');
+            const newState = !checkbox.checked;
+            checkbox.checked = newState;
+            toggleSelectAll(newState);
+
+            // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+            const customCheckbox = document.querySelector('.custom-checkbox');
+            if (newState) {
+                customCheckbox.classList.add('checked');
+            } else {
+                customCheckbox.classList.remove('checked');
+            }
+        }
+
+        // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+        async function loadNotifications() {
+            try {
+                console.log('?? Loading notifications from:', `${API_URL}/notifications`);
+                showLoading(true);
+
+                const response = await fetch(`${API_URL}/notifications?limit=100`, {
+                    headers: {
+                        'Authorization': `Bearer ${userToken}`,
+                        'Accept': 'application/json'
+                    }
+                });
+
+                console.log('?? Response status:', response.status);
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    console.error('? Response error:', response.status, errorText);
+
+                    if (response.status === 401) {
+                        showEmptyState('Session expired. Please login again.');
+                        localStorage.removeItem('token');
+                    } else {
+                        showEmptyState('Error loading notifications. Check console.');
+                    }
+                    return;
+                }
+
+                const data = await response.json();
+                console.log('? API Response received:', data);
+
+                if (data.success) {
+                    console.log(`?? Total notifications: ${data.notifications.length}`);
+
+                    // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ symptom_recommendations
+                    const symptomNotifications = data.notifications.filter(
+                        notification => notification.type === 'symptom_recommendations'
+                    );
+
+                    console.log(`?? Symptom notifications: ${symptomNotifications.length}`);
+
+                    allNotifications = symptomNotifications;
+
+                    if (symptomNotifications.length === 0) {
+                        showEmptyState('No symptom notifications yet. Save a day with symptoms in Space');
+                        console.log('?? No symptom notifications found');
+                    } else {
+                        renderNotifications(symptomNotifications);
+                        console.log('? Notifications rendered');
+                    }
+
+                    updateSelectedCount();
+                } else {
+                    console.error('? API returned success: false', data);
+                    showEmptyState('Error loading notifications');
+                }
+            } catch (error) {
+                console.error('? Network error loading notifications:', error);
+                showEmptyState('Network error. Check if server is running.');
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+        function renderNotifications(notifications) {
+            console.log('?? Rendering', notifications.length, 'notifications');
+            historyList.innerHTML = '';
+
+            notifications.forEach(notification => {
+                const notificationElement = createNotificationElement(notification);
+                historyList.appendChild(notificationElement);
+            });
+
+            // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ AOS пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+            if (typeof AOS !== 'undefined') {
+                AOS.refresh();
+            }
+
+            console.log('? Notifications rendered successfully');
+        }
+
+        // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+        function createNotificationElement(notification) {
+            const div = document.createElement('div');
+            div.className = 'notification';
+            div.dataset.id = notification.id;
+
+            // пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+            const { date, recommendations, symptomCount, allSymptoms } = parseNotificationMessage(notification.message);
+
+            // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+            const sentDate = new Date(notification.sent_at);
+            const formattedTime = sentDate.toLocaleTimeString('en-US', {
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+
+            const displayDate = date || sentDate.toLocaleDateString('en-US', {
+                month: 'short',
+                day: 'numeric'
+            });
+
+            // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ (пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ)
+            const groupedSymptoms = groupSymptomsByPage(allSymptoms);
+
+            div.innerHTML = `
+                    <div class="notification-header-compact">
+                        <div class="notification-title-row">
+                            <span class="notification-date-badge">?? ${displayDate}</span>
+                            ${symptomCount > 0 ?
+                    `<span class="notification-symptoms-count">${symptomCount} symptom${symptomCount > 1 ? 's' : ''}</span>`
+                    : ''}
+                        </div>
+                        <input type="checkbox"
+                               class="notification-checkbox"
+                               onchange="window.toggleNotificationSelection(${notification.id}, this.checked)">
+                    </div>
+
+                    ${recommendations.length > 0 ? `
+                        <div class="recommendations-grid">
+                            ${recommendations.map(rec => {
+                        // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+                        const symptomsForRec = extractSymptomsForRecommendation(rec, allSymptoms);
+
+                        return `
+                                    <div class="recommendation-card">
+                                        <div class="recommendation-header">
+                                            <div class="recommendation-title">
+                                                <span class="recommendation-icon">?</span>
+                                                ${rec.title}
+                                            </div>
+                                        </div>
+                                        ${rec.description ? `
+                                            <div class="recommendation-description">
+                                                ${rec.description}
+                                            </div>
+                                        ` : ''}
+                                        ${symptomsForRec.length > 0 ? `
+                                            <div class="symptom-buttons-container">
+                                                ${symptomsForRec.map(symptom => {
+                            const page = getSymptomPage(symptom);
+                            const displayName = getDisplayNameForSymptom(symptom, page);
+
+                            if (!page || !displayName) return '';
+
+                            return `
+                                                        <a href="${page}"
+                                                           class="symptom-button"
+                                                           target="_blank"
+                                                           title="Go to ${displayName} page">
+                                                            ${displayName}
+                                                        </a>
+                                                    `;
+                        }).filter(btn => btn !== '').join('')}
+                                            </div>
+                                        ` : ''}
+                                    </div>
+                                `;
+                    }).join('')}
+                        </div>
+                    ` : `
+                        <div class="no-recommendations">
+                            No specific recommendations available
+                        </div>
+                    `}
+
+                    <div class="notification-footer-compact">
+                        <div class="notification-time">
+                            ?? Received at ${formattedTime}
+                        </div>
+                        <div class="notification-actions-compact">
+                            <button class="delete-btn-compact"
+                                    onclick="window.showDeleteConfirm(${notification.id})"
+                                    title="Delete notification">
+                                <svg viewBox="0 0 24 24">
+                                    <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                `;
+
+            return div;
+        }
+
+        // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+        function groupSymptomsByPage(symptoms) {
+            const groups = {};
+
+            symptoms.forEach(symptom => {
+                const page = getSymptomPage(symptom);
+                if (page) {
+                    if (!groups[page]) {
+                        groups[page] = [];
+                    }
+                    // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+                    const existingSymptom = groups[page].find(s =>
+                        getDisplayNameForSymptom(s, page) === getDisplayNameForSymptom(symptom, page)
+                    );
+
+                    if (!existingSymptom) {
+                        groups[page].push(symptom);
+                    }
+                }
+            });
+
+            return groups;
+        }
+
+        // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ (пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ)
+        function getDisplayNameForSymptom(symptom, page) {
+            if (!page) return formatSymptomName(symptom);
+
+            // пїЅпїЅпїЅпїЅ пїЅпїЅпїЅ insomnia.html, пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ "Insomnia", пїЅ пїЅпїЅ "Poor Sleep"
+            if (page === 'insomnia.html') {
+                // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅ insomnia.html
+                const insomniaSymptoms = SYMPTOM_GROUPING['insomnia.html'] || [];
+                if (insomniaSymptoms.includes(symptom.toLowerCase()) ||
+                    insomniaSymptoms.includes(symptom.replace(/-/g, ' ').toLowerCase())) {
+                    // пїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ insomnia.html, пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ "Insomnia"
+                    return 'Insomnia';
+                }
+            }
+
+            // пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
+            for (const [pageKey, symptoms] of Object.entries(SYMPTOM_GROUPING)) {
+                if (pageKey === page) {
+                    // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
+                    return formatSymptomName(symptoms[0]);
+                }
+            }
+
+            return formatSymptomName(symptom);
+        }
+
+        // пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+        function extractSymptomsForRecommendation(recommendation, allSymptoms) {
+            const symptomsForRec = [];
+            const recText = (recommendation.title + ' ' + recommendation.description).toLowerCase();
+
+            // пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+            allSymptoms.forEach(symptom => {
+                const symptomVariants = getSymptomVariants(symptom);
+
+                for (const variant of symptomVariants) {
+                    if (recText.includes(variant.toLowerCase()) ||
+                        recommendation.title.toLowerCase().includes(variant.toLowerCase()) ||
+                        (recommendation.symptoms && recommendation.symptoms.some(s =>
+                            getNormalizedSymptom(s) === getNormalizedSymptom(symptom)))) {
+
+                        // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+                        const page = getSymptomPage(symptom);
+                        const displayName = getDisplayNameForSymptom(symptom, page);
+
+                        const alreadyAdded = symptomsForRec.some(addedSymptom => {
+                            const addedPage = getSymptomPage(addedSymptom);
+                            const addedDisplayName = getDisplayNameForSymptom(addedSymptom, addedPage);
+                            return addedDisplayName === displayName;
+                        });
+
+                        if (!alreadyAdded) {
+                            symptomsForRec.push(symptom);
+                        }
+                        break;
+                    }
+                }
+            });
+
+            return symptomsForRec;
+        }
+
+        // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+        function getNormalizedSymptom(symptom) {
+            return symptom.toLowerCase().replace(/[-_]/g, ' ').trim();
+        }
+
+        // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+        function getSymptomPage(symptomName) {
+            const lowerSymptom = getNormalizedSymptom(symptomName);
+
+            // пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+            for (const [page, symptoms] of Object.entries(SYMPTOM_GROUPING)) {
+                if (symptoms.some(s => getNormalizedSymptom(s) === lowerSymptom)) {
+                    return page;
+                }
+            }
+
+            // пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+            for (const [page, symptoms] of Object.entries(SYMPTOM_GROUPING)) {
+                for (const symptom of symptoms) {
+                    const normalizedSymptom = getNormalizedSymptom(symptom);
+                    if (lowerSymptom.includes(normalizedSymptom) || normalizedSymptom.includes(lowerSymptom)) {
+                        return page;
+                    }
+                }
+            }
+
+            return null;
+        }
+
+        // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+        function getSymptomVariants(symptom) {
+            const normalized = getNormalizedSymptom(symptom);
+            const variants = [normalized];
+
+            // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+            variants.push(normalized.replace(/ /g, '-'));
+            variants.push(normalized.replace(/ /g, '_'));
+            variants.push(normalized.replace(/-/g, ' '));
+            variants.push(normalized.replace(/_/g, ' '));
+
+            return [...new Set(variants)]; // пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
+        }
+
+        // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+        function formatSymptomName(symptom) {
+            return symptom
+                .split(/[-_]/)
+                .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+                .join(' ')
+                .replace(/\b\w/g, l => l.toUpperCase());
+        }
+
+        // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ - пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ
+        function parseNotificationMessage(message) {
+            console.log('Raw message to parse:', message);
+
+            const lines = message.split('\n');
+            console.log('Lines:', lines);
+
+            let date = '';
+            let symptomCount = 0;
+            const recommendations = [];
+            const allSymptoms = [];
+            let currentRecommendation = null;
+
+            for (let i = 0; i < lines.length; i++) {
+                const line = lines[i].trim();
+
+                if (!line) continue;
+
+                // пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+                if (line.includes('Daily Recommendations for')) {
+                    const dateMatch = line.match(/Daily Recommendations for (.+)/);
+                    if (dateMatch) {
+                        date = dateMatch[1].trim();
+                        console.log('Found date in Daily Recommendations:', date);
+                    }
+                } else if (line.includes('Date:')) {
+                    date = line.replace('Date:', '').trim();
+                    console.log('Found date:', date);
+                } else if (line.includes('?? Daily Recommendations')) {
+                    const dateMatch = line.match(/?? Daily Recommendations - (.+)/);
+                    if (dateMatch) {
+                        date = dateMatch[1].trim();
+                        console.log('Found date with emoji:', date);
+                    }
+                }
+
+                // пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+                if (line.includes('Total symptoms tracked:')) {
+                    const match = line.match(/Total symptoms tracked: (\d+)/);
+                    if (match) {
+                        symptomCount = parseInt(match[1]);
+                        console.log('Found symptom count from tracked:', symptomCount);
+                    }
+                } else if (line.includes('Total symptoms:')) {
+                    const match = line.match(/Total symptoms: (\d+)/);
+                    if (match) {
+                        symptomCount = parseInt(match[1]);
+                        console.log('Found symptom count:', symptomCount);
+                    }
+                }
+
+                // пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅ "Symptoms:" пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+                if (line.includes('Symptoms:')) {
+                    const symptomsPart = line.replace('Symptoms:', '').trim();
+                    const symptoms = symptomsPart.split(',').map(s => s.trim()).filter(s => s);
+                    allSymptoms.push(...symptoms);
+                    console.log('Found symptoms:', symptoms);
+                }
+
+                // пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+                if (line.match(/^\d+\.\s+.+:/)) {
+                    // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ
+                    if (currentRecommendation) {
+                        recommendations.push(currentRecommendation);
+                    }
+
+                    // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ "1. Insomnia: Insomnia, Poor Sleep Quality"
+                    const match = line.match(/^\d+\.\s+(.+?):\s*(.+)/);
+                    if (match) {
+                        currentRecommendation = {
+                            title: match[1].trim(),
+                            description: match[2].trim(),
+                            symptoms: []
+                        };
+                        console.log('Found recommendation with colon:', currentRecommendation);
+
+                        // пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+                        const descSymptoms = extractSymptomsFromText(match[2]);
+                        if (descSymptoms.length > 0) {
+                            currentRecommendation.symptoms = descSymptoms;
+                            allSymptoms.push(...descSymptoms);
+                        }
+                    }
+                }
+                // пїЅпїЅпїЅпїЅпїЅпїЅ "1. Title" (пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ)
+                else if (line.match(/^\d+\.\s+[^:]+$/)) {
+                    if (currentRecommendation) {
+                        recommendations.push(currentRecommendation);
+                    }
+
+                    const titleMatch = line.match(/^\d+\.\s+(.+)/);
+                    if (titleMatch) {
+                        currentRecommendation = {
+                            title: titleMatch[1].trim(),
+                            description: '',
+                            symptoms: []
+                        };
+                        console.log('Found simple recommendation:', currentRecommendation);
+                    }
+                }
+                // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+                else if (currentRecommendation && line && !line.match(/^\d+\./) &&
+                    !line.includes('Total symptoms') && !line.includes('Symptoms:')) {
+                    if (!currentRecommendation.description) {
+                        currentRecommendation.description = line.trim();
+                    } else {
+                        currentRecommendation.description += ' ' + line.trim();
+                    }
+
+                    // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
+                    const extraSymptoms = extractSymptomsFromText(line);
+                    if (extraSymptoms.length > 0) {
+                        currentRecommendation.symptoms.push(...extraSymptoms);
+                        allSymptoms.push(...extraSymptoms);
+                    }
+                }
+            }
+
+            // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+            if (currentRecommendation) {
+                recommendations.push(currentRecommendation);
+            }
+
+            // пїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+            if (allSymptoms.length === 0) {
+                recommendations.forEach(rec => {
+                    const titleSymptoms = extractSymptomsFromText(rec.title);
+                    if (titleSymptoms.length > 0) {
+                        rec.symptoms = titleSymptoms;
+                        allSymptoms.push(...titleSymptoms);
+                    }
+                });
+            }
+
+            // пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+            const uniqueSymptoms = [...new Set(allSymptoms.map(s => getNormalizedSymptom(s)))].map(s => {
+                // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
+                const original = allSymptoms.find(os => getNormalizedSymptom(os) === s);
+                return original || s;
+            });
+
+            console.log('Parsed notification result:', {
+                date,
+                symptomCount,
+                recommendationsCount: recommendations.length,
+                allSymptoms: uniqueSymptoms
+            });
+
+            return {
+                date,
+                recommendations,
+                symptomCount: uniqueSymptoms.length,
+                allSymptoms: uniqueSymptoms
+            };
+        }
+
+        // пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
+        function extractSymptomsFromText(text) {
+            if (!text) return [];
+
+            const foundSymptoms = [];
+            const lowerText = text.toLowerCase();
+
+            // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+            for (const [page, symptoms] of Object.entries(SYMPTOM_GROUPING)) {
+                for (const symptom of symptoms) {
+                    const normalizedSymptom = getNormalizedSymptom(symptom);
+                    const symptomVariants = getSymptomVariants(symptom);
+
+                    for (const variant of symptomVariants) {
+                        if (lowerText.includes(variant.toLowerCase())) {
+                            if (!foundSymptoms.some(s => getNormalizedSymptom(s) === normalizedSymptom)) {
+                                foundSymptoms.push(symptom);
+                            }
+                            break;
+                        }
+                    }
+                }
+            }
+
+            return foundSymptoms;
+        }
+
+        // пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+        window.toggleNotificationSelection = function (id, checked) {
+            if (checked) {
+                if (!selectedNotificationIds.includes(id)) {
+                    selectedNotificationIds.push(id);
+                }
+            } else {
+                selectedNotificationIds = selectedNotificationIds.filter(item => item !== id);
+            }
+
+            updateSelectedCount();
+        };
+
+        // пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ
+        window.toggleSelectAll = function (checked) {
+            selectedNotificationIds = [];
+
+            if (checked) {
+                selectedNotificationIds = allNotifications.map(n => n.id);
+            }
+
+            // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+            document.getElementById('select-all-checkbox').checked = checked;
+
+            // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+            const customCheckbox = document.querySelector('.custom-checkbox');
+            if (checked) {
+                customCheckbox.classList.add('checked');
+            } else {
+                customCheckbox.classList.remove('checked');
+            }
+
+            // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ DOM
+            const checkboxes = document.querySelectorAll('.notification-checkbox');
+            checkboxes.forEach(checkbox => {
+                checkbox.checked = checked;
+            });
+
+            updateSelectedCount();
+        };
+
+        // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+        function updateSelectedCount() {
+            const count = selectedNotificationIds.length;
+
+            if (count > 0) {
+                deleteSelectedBtn.classList.add('visible');
+                deleteSelectedBtn.textContent = `Delete Selected (${count})`;
+            } else {
+                deleteSelectedBtn.classList.remove('visible');
+            }
+
+            // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ "пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ"
+            if (allNotifications.length > 0) {
+                const checkbox = document.getElementById('select-all-checkbox');
+                const customCheckbox = document.querySelector('.custom-checkbox');
+                const allSelected = selectedNotificationIds.length === allNotifications.length;
+
+                checkbox.checked = allSelected;
+                if (allSelected) {
+                    customCheckbox.classList.add('checked');
+                } else {
+                    customCheckbox.classList.remove('checked');
+                }
+            }
+        }
+
+        // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
+        window.showDeleteConfirm = function (id) {
+            currentNotificationToDelete = id;
+            modalText.textContent = 'Are you sure you want to delete this notification?';
+            modalOverlay.style.display = 'flex';
+        };
+
+        // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+        window.showBulkDeleteConfirm = function () {
+            if (selectedNotificationIds.length === 0) return;
+
+            const count = selectedNotificationIds.length;
+            bulkDeleteText.textContent = `Are you sure you want to delete ${count} selected notification${count > 1 ? 's' : ''}?`;
+            bulkDeleteModal.style.display = 'flex';
+        };
+
+        // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
+        window.confirmDelete = async function () {
+            if (!currentNotificationToDelete) return;
+
+            try {
+                console.log(`??? Deleting notification ${currentNotificationToDelete}`);
+
+                const response = await fetch(`${API_URL}/notifications/${currentNotificationToDelete}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${userToken}`
+                    }
+                });
+
+                if (response.ok) {
+                    // пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+                    allNotifications = allNotifications.filter(n => n.id !== currentNotificationToDelete);
+                    selectedNotificationIds = selectedNotificationIds.filter(id => id !== currentNotificationToDelete);
+
+                    // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+                    renderNotifications(allNotifications);
+                    updateSelectedCount();
+
+                    showToast('Notification deleted');
+                    console.log('? Notification deleted successfully');
+                } else {
+                    const error = await response.text();
+                    console.error('? Delete failed:', error);
+                    showToast('Error deleting notification');
+                }
+            } catch (error) {
+                console.error('? Network error deleting notification:', error);
+                showToast('Error deleting notification');
+            } finally {
+                closeModal();
+            }
+        };
+
+        // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+        window.confirmBulkDelete = async function () {
+            if (selectedNotificationIds.length === 0) {
+                closeBulkDeleteModal();
+                return;
+            }
+
+            try {
+                console.log(`??? Bulk deleting ${selectedNotificationIds.length} notifications`);
+
+                const response = await fetch(`${API_URL}/notifications/bulk-delete`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${userToken}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        notificationIds: selectedNotificationIds
+                    })
+                });
+
+                if (response.ok) {
+                    // пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+                    allNotifications = allNotifications.filter(n => !selectedNotificationIds.includes(n.id));
+                    selectedNotificationIds = [];
+
+                    // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+                    renderNotifications(allNotifications);
+                    updateSelectedCount();
+
+                    showToast('Notifications deleted');
+                    console.log('? Bulk delete successful');
+                } else {
+                    const error = await response.text();
+                    console.error('? Bulk delete failed:', error);
+                    showToast('Error deleting notifications');
+                }
+            } catch (error) {
+                console.error('? Network error bulk deleting:', error);
+                showToast('Error deleting notifications');
+            } finally {
+                closeBulkDeleteModal();
+            }
+        };
+
+        // пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ (пїЅпїЅпїЅпїЅ)
+        window.closeModal = function () {
+            modalOverlay.style.display = 'none';
+            currentNotificationToDelete = null;
+        };
+
+        // пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+        window.closeBulkDeleteModal = function () {
+            bulkDeleteModal.style.display = 'none';
+        };
+
+        // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+        function showEmptyState(message) {
+            historyList.innerHTML = `
+                    <div class="empty-state" style="text-align: center; padding: 60px 20px;">
+                        <div style="font-size: 20px; color: #ffffff; margin-bottom: 20px; font-weight: 600;">${message}</div>
+                        <div style="display: flex; flex-direction: column; gap: 12px; align-items: center;">
+                            ${!userToken ? '<a href="index.html" class="symptom-button" style="display: inline-block; width: auto;">Go to login</a>' : ''}
+                            <button onclick="loadNotifications()" class="symptom-button" style="cursor: pointer;">
+                                ?? Retry Loading
+                            </button>
+                        </div>
+                    </div>
+                `;
+        }
+
+        // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ/пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+        function showLoading(show) {
+            loadingIndicator.style.display = show ? 'block' : 'none';
+        }
+
+        // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ toast пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+        function showToast(message) {
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.textContent = message;
+            toast.style.cssText = `
+                    position: fixed;
+                    top: 20px;
+                    right: 20px;
+                    background: rgba(20, 20, 25, 0.95);
+                    backdrop-filter: blur(20px);
+                    color: white;
+                    padding: 14px 24px;
+                    border-radius: 12px;
+                    z-index: 10000;
+                    animation: fadeInOut 3s ease-in-out;
+                    border: 1px solid rgba(255, 255, 255, 0.1);
+                    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+                    font-weight: 500;
+                `;
+
+            document.body.appendChild(toast);
+
+            setTimeout(() => {
+                toast.remove();
+            }, 3000);
+        }
+
+        // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+        function setupEventListeners() {
+            // пїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ
+            modalOverlay.addEventListener('click', function (e) {
+                if (e.target === modalOverlay) {
+                    closeModal();
+                }
+            });
+
+            bulkDeleteModal.addEventListener('click', function (e) {
+                if (e.target === bulkDeleteModal) {
+                    closeBulkDeleteModal();
+                }
+            });
+        }
+
+        // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+        function startAutoRefresh() {
+            autoRefreshInterval = setInterval(() => {
+                if (userToken) {
+                    console.log('?? Auto-refreshing notifications...');
+                    loadNotifications();
+                }
+            }, 30000); // 30 пїЅпїЅпїЅпїЅпїЅпїЅ
+
+            console.log('? Auto-refresh started (30s interval)');
+        }
+
+        // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+        function stopAutoRefresh() {
+            if (autoRefreshInterval) {
+                clearInterval(autoRefreshInterval);
+                autoRefreshInterval = null;
+                console.log('? Auto-refresh stopped');
+            }
+        }
+
+        // CSS пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ toast
+        const style = document.createElement('style');
+        style.textContent = `
+                @keyframes fadeInOut {
+                    0% { opacity: 0; transform: translateY(-20px); }
+                    10% { opacity: 1; transform: translateY(0); }
+                    90% { opacity: 1; transform: translateY(0); }
+                    100% { opacity: 0; transform: translateY(-20px); }
+                }
+            `;
+        document.head.appendChild(style);
+
+        // пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+        window.loadNotifications = loadNotifications;
+    </script>
+
+</body>
+</html>
+
