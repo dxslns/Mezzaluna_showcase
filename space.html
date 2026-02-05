@@ -1170,6 +1170,7 @@ function updateStreakInStorage(date) {
 }
 
 // =================== ФУНКЦИЯ ДЛЯ СОЗДАНИЯ УВЕДОМЛЕНИЙ ===================
+// =================== ФУНКЦИЯ ДЛЯ СОЗДАНИЯ УВЕДОМЛЕНИЙ ===================
 function createNotificationForDay(dayData, date) {
     try {
         console.log('Creating notification for day:', { date, dayData });
@@ -1181,46 +1182,40 @@ function createNotificationForDay(dayData, date) {
         // Обрабатываем симптомы сна
         if (dayData.sleepQuality === 'poor-sleep') allSymptoms.push('poor-sleep');
         if (dayData.sleepIssues && dayData.sleepIssues.length > 0) {
-            // Для каждого симптома сна создаем отдельную рекомендацию
             dayData.sleepIssues.forEach(symptom => {
                 allSymptoms.push(symptom);
                 
                 // Создаем рекомендацию для конкретного симптома сна
                 const sleepRecommendations = {
                     'insomnia': {
-                        title: 'Insomnia Management',
+                        title: 'Insomnia',
                         description: 'For insomnia, establish a consistent bedtime routine and avoid screens 1 hour before sleep.',
                         symptoms: ['insomnia']
                     },
                     'early-wakeup': {
-                        title: 'Early Wakeup Solutions',
+                        title: 'Early Wakeup',
                         description: 'For early awakenings, try going to bed later or using blackout curtains.',
                         symptoms: ['early-wakeup']
                     },
                     'fragmented-sleep': {
-                        title: 'Sleep Continuity',
+                        title: 'Fragmented Sleep',
                         description: 'Avoid fluids before bed and reduce noise disruptions for better sleep continuity.',
                         symptoms: ['fragmented-sleep']
                     },
                     'difficulty-falling-asleep': {
-                        title: 'Sleep Onset Improvement',
+                        title: 'Difficulty Falling Asleep',
                         description: 'Practice relaxation techniques and create a calming pre-sleep routine.',
                         symptoms: ['difficulty-falling-asleep']
                     },
                     'non-restorative-sleep': {
-                        title: 'Restorative Sleep',
+                        title: 'Non-Restorative Sleep',
                         description: 'Ensure your sleep environment is comfortable and free from disruptions.',
                         symptoms: ['non-restorative-sleep']
                     },
                     'daytime-sleepiness': {
-                        title: 'Daytime Alertness',
+                        title: 'Daytime Sleepiness',
                         description: 'Maintain consistent sleep schedule and avoid caffeine in the afternoon.',
                         symptoms: ['daytime-sleepiness']
-                    },
-                    'poor-sleep': {
-                        title: 'Sleep Quality Improvement',
-                        description: 'Improve sleep quality with a dark, quiet room and comfortable temperature.',
-                        symptoms: ['poor-sleep']
                     }
                 };
                 
@@ -1310,7 +1305,7 @@ function createNotificationForDay(dayData, date) {
                         symptoms: ['apathy']
                     },
                     'depressive-episode': {
-                        title: 'Mood Support',
+                        title: 'Depressive Episode Support',
                         description: 'Reach out to supportive people and consider professional help.',
                         symptoms: ['depressive-episode']
                     },
@@ -1325,7 +1320,7 @@ function createNotificationForDay(dayData, date) {
                         symptoms: ['social-isolation']
                     },
                     'mood-swings': {
-                        title: 'Emotional Stability',
+                        title: 'Mood Stability',
                         description: 'Track mood patterns and practice emotional regulation techniques.',
                         symptoms: ['mood-swings']
                     }
@@ -1359,17 +1354,17 @@ function createNotificationForDay(dayData, date) {
                 
                 const activityRecommendations = {
                     'sedentary-day': {
-                        title: 'Physical Activity',
+                        title: 'Sedentary Lifestyle',
                         description: 'Incorporate light movement throughout the day.',
                         symptoms: ['sedentary-day']
                     },
                     'overtraining': {
-                        title: 'Recovery & Rest',
+                        title: 'Overtraining Recovery',
                         description: 'Balance exercise with adequate rest and recovery time.',
                         symptoms: ['overtraining']
                     },
                     'bad-mood': {
-                        title: 'Activity & Mood',
+                        title: 'Activity & Mood Connection',
                         description: 'Light exercise can improve mood and energy levels.',
                         symptoms: ['bad-mood']
                     },
@@ -1379,17 +1374,17 @@ function createNotificationForDay(dayData, date) {
                         symptoms: ['reduced-metabolism']
                     },
                     'muscle-weakness': {
-                        title: 'Strength Training',
+                        title: 'Muscle Strength',
                         description: 'Incorporate light strength exercises for muscle health.',
                         symptoms: ['muscle-weakness']
                     },
                     'increased-stress': {
-                        title: 'Stress & Activity Balance',
+                        title: 'Stress Management',
                         description: 'Moderate exercise can help manage stress levels.',
                         symptoms: ['increased-stress']
                     },
                     'chronic-fatigue': {
-                        title: 'Energy Management',
+                        title: 'Chronic Fatigue Management',
                         description: 'Balance activity with rest for chronic fatigue.',
                         symptoms: ['chronic-fatigue']
                     }
@@ -1404,26 +1399,33 @@ function createNotificationForDay(dayData, date) {
         // Если была низкая/высокая активность но нет конкретных симптомов
         if (dayData.activityLevel && (dayData.activityLevel <= 3 || dayData.activityLevel >= 8) &&
             (!dayData.activityIssues || dayData.activityIssues.length === 0)) {
+            const activityType = dayData.activityLevel <= 3 ? 'low-activity' : 'high-activity';
             recommendations.push({
-                title: 'Activity Balance',
+                title: activityType === 'low-activity' ? 'Low Activity Level' : 'High Activity Level',
                 description: 'Aim for moderate daily activity (30-60 minutes).',
-                symptoms: [dayData.activityLevel <= 3 ? 'low-activity' : 'high-activity']
+                symptoms: [activityType]
             });
         }
         
         console.log('Collected symptoms:', allSymptoms);
         console.log('Created recommendations:', recommendations);
         
-        // Создаем сообщение уведомления
-        let message = `📋 Daily Recommendations for ${date}\n\n`;
+        // Создаем сообщение уведомления в ПРАВИЛЬНОМ формате
+        let message = `📋 Daily Recommendations - ${date}\n\n`;
         
+        // Добавляем счетчик симптомов
         if (allSymptoms.length > 0) {
-            message += `Total symptoms tracked: ${allSymptoms.length}\n`;
+            message += `Total symptoms: ${allSymptoms.length}\n`;
+        }
+        
+        // Добавляем список симптомов
+        if (allSymptoms.length > 0) {
             message += `Symptoms: ${allSymptoms.join(', ')}\n\n`;
         } else {
             message += `No specific symptoms tracked\n\n`;
         }
         
+        // Добавляем рекомендации в правильном формате "1. Title: Description"
         if (recommendations.length > 0) {
             recommendations.forEach((rec, index) => {
                 message += `${index + 1}. ${rec.title}: ${rec.description}\n`;
@@ -1441,7 +1443,7 @@ function createNotificationForDay(dayData, date) {
             read: false
         };
         
-        console.log('Notification message:', notification.message);
+        console.log('Notification message created:', notification.message);
         
         // Сохраняем в localStorage
         const currentNotifications = JSON.parse(localStorage.getItem('health_tracker_notifications') || '[]');
@@ -1455,7 +1457,6 @@ function createNotificationForDay(dayData, date) {
         return false;
     }
 }
-
 // =================== HEALTH SCORE ФУНКЦИИ ===================
 function calculateSleepScore(sleepHours, sleepQuality, sleepIssues) {
     let baseScore = 0;
@@ -2212,6 +2213,7 @@ document.addEventListener('DOMContentLoaded', function () {
     
 </body>
 </html>
+
 
 
 
