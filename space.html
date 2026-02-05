@@ -1,574 +1,76 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-PWBVFG5DVZ"></script>
-    <script>
-        window.dataLayer = window.dataLayer || [];
-        function gtag() { dataLayer.push(arguments); }
-        gtag('js', new Date());
-        gtag('config', 'G-PWBVFG5DVZ');
-    </script>
-
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1.0" />
     <link rel="icon" href="PNGs/favicon5.ico">
     <title>My Space</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet" />
     <style>
-        :root {
-            --primary-color: #000;
-            --secondary-color: #000;
-            --accent-color: #000;
-            --light-color: #f8f9fa;
-            --dark-color: #000;
-            --success-color: #28a745;
-            --warning-color: #ffc107;
-            --danger-color: #dc3545;
-            --border-radius: 8px;
-            --box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            --transition: all 0.3s ease;
-            --notion-bg: #f7f7f7;
-            --notion-text: #000;
-            --notion-border: #e0e0e0;
-            --notion-button-bg: #e0e0e0;
-            --notion-button-hover: #d0d0d0;
-            --notion-red: #f66;
-            --notion-green: #27ae60;
-            --notion-blue: #3082fc;
-            --notion-yellow: #ff8b47;
-            --notion-purple: #9b51e0;
-            --streak-color: #FF5722;
-            --streak-inactive: #757575;
-            --excellent-color: #4CAF50;
-            --good-color: #FFC107;
-            --fair-color: #FF9800;
-            --poor-color: #F44336;
-            --ring-bg-color: rgba(255, 255, 255, 0.1);
-            --saved-day-bg: #e8f5e9;
-            --saved-day-border: #c8e6c9;
-            --saved-day-text: #2e7d32;
-        }
-
         * {
-            box-sizing: border-box;
             margin: 0;
             padding: 0;
+            box-sizing: border-box;
         }
 
         body {
             font-family: 'Roboto', sans-serif;
-            line-height: 1.6;
-            color: var(--dark-color);
-            background-image: url('PNGs/pic2.png');
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-            padding: 0;
-            width: 100vw;
-            overflow-x: hidden;
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
-            flex-direction: column;
+            background: #0a0a0a;
+            color: #f0f0f0;
+            padding: 20px;
             min-height: 100vh;
-            margin: 0;
         }
 
         .section {
-            margin: 10px auto;
-            border-radius: 30px;
-            box-shadow: 0 6px 18px rgba(0,0,0, 0.6);
-            background-color: rgba(255, 255, 255, 0.1);
+            background: rgba(20, 20, 25, 0.85);
+            backdrop-filter: blur(12px);
+            border-radius: 16px;
             padding: 20px;
-            width: calc(100% - 20px);
-            max-width: 1200px;
-            overflow-y: auto;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
         }
 
         .section-title {
-            font-size: 1.5rem;
-            margin-bottom: 20px;
-            color: #000;
-            border-bottom: 2px solid var(--secondary-color);
-            padding-bottom: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            cursor: pointer;
-            user-select: none;
-            transition: var(--transition);
-        }
-
-        .calendar {
-            width: 100%;
-        }
-
-        .calendar-header {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            margin-bottom: 15px;
-        }
-
-        @media (min-width: 400px) {
-            .calendar-header {
-                flex-direction: row;
-                justify-content: space-between;
-                align-items: center;
-            }
-        }
-
-        .calendar-title {
-            font-size: 1.3rem;
-            font-weight: 500;
-            color: #000;
-        }
-
-        .streak-container {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            margin: 0 15px;
-            order: 2;
-        }
-
-        @media (min-width: 400px) {
-            .streak-container {
-                order: 0;
-                margin: 0;
-                margin-right: auto;
-            }
-        }
-
-        .streak-fire {
-            position: relative;
-            width: 28px;
-            height: 28px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.2rem;
-            transition: var(--transition);
-        }
-
-            .streak-fire.active {
-                color: var(--streak-color);
-                filter: drop-shadow(0 0 5px rgba(255, 87, 34, 0.5));
-                animation: flame-pulse 2s infinite alternate;
-            }
-
-            .streak-fire.inactive {
-                color: var(--streak-inactive);
-                opacity: 0.5;
-            }
-
-        @keyframes flame-pulse {
-            0% {
-                transform: scale(1);
-                filter: drop-shadow(0 0 5px rgba(255, 87, 34, 0.5));
-            }
-
-            50% {
-                transform: scale(1.1);
-                filter: drop-shadow(0 0 8px rgba(255, 87, 34, 0.7));
-            }
-
-            100% {
-                transform: scale(1);
-                filter: drop-shadow(0 0 5px rgba(255, 87, 34, 0.5));
-            }
-        }
-
-        .streak-count {
-            font-size: 1.1rem;
-            font-weight: 700;
-            color: #000;
-            min-width: 20px;
-            text-align: center;
-        }
-
-        .calendar-nav-wrapper {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            order: 3;
-        }
-
-        @media (min-width: 400px) {
-            .calendar-nav-wrapper {
-                order: 0;
-            }
-        }
-
-        .calendar-nav {
-            display: flex;
-            gap: 10px;
-        }
-
-        .calendar-nav-btn {
-            padding: 5px 10px;
-            border: none;
-            border-radius: var(--border-radius);
-            background-color: var(--primary-color);
-            color: #fff;
-            cursor: pointer;
-            transition: var(--transition);
-        }
-
-        .calendar-grid {
-            display: grid;
-            grid-template-columns: repeat(7,1fr);
-            gap: 5px;
-        }
-
-        .calendar-day-header {
-            text-align: center;
-            font-weight: 500;
-            padding: 6px;
-            font-size: .7rem;
-            color: #000;
-        }
-
-        @media (min-width:350px) {
-            .calendar-day-header {
-                padding: 8px;
-                font-size: .8rem;
-            }
-        }
-
-        .calendar-day {
-            aspect-ratio: 1;
-            background-color: #fff;
-            border-radius: var(--border-radius);
-            box-shadow: 0 2px 4px rgba(0,0,0,0.6);
-            padding: 5px;
-            cursor: pointer;
-            transition: var(--transition);
-            border: 1px solid #ddd;
-            display: flex;
-            flex-direction: column;
-            position: relative;
-        }
-
-            .calendar-day.saved {
-                background-color: var(--saved-day-bg) !important;
-                border-color: var(--saved-day-border) !important;
-                border-width: 2px;
-            }
-
-                .calendar-day.saved .calendar-day-number {
-                    color: var(--saved-day-text);
-                    font-weight: 700;
-                }
-
-        @media (max-width:500px) {
-            .calendar-day {
-                height: 100%;
-            }
-
-            .day-mood-indicator,
-            .day-sleep-indicator,
-            .day-water-indicator {
-                display: none !important;
-            }
-        }
-
-        .calendar-day:hover {
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-            transform: translateY(-2px);
-        }
-
-        .calendar-day-number {
-            font-weight: 500;
-            margin-bottom: 5px;
-            font-size: 0.9rem;
-            text-align: center;
-        }
-
-        .day-checkbox {
-            display: flex;
-            align-items: center;
-            margin: 3px 0;
-            font-size: .8rem;
-        }
-
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0,0,0,0.5);
-            z-index: 1000;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .modal-content {
-            background-color: var(--notion-bg);
-            border-radius: 35px;
-            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
-            padding: 20px;
-            width: 95%;
-            max-width: 600px;
-            max-height: 80vh;
-            overflow-y: auto;
-            color: var(--notion-text);
-            font-family: 'Roboto',sans-serif;
-        }
-
-        .modal-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 20px;
-            border-bottom: 1px solid var(--notion-border);
-            padding-bottom: 15px;
-        }
-
-        .modal-title {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: var(--notion-text);
-        }
-
-        .close-modal {
-            background: none;
-            border: none;
-            font-size: 1.8rem;
-            cursor: pointer;
-            color: var(--notion-text);
-            opacity: .6;
-            transition: opacity .2s ease;
-        }
-
-        .modal-section {
-            margin-bottom: 25px;
-            opacity: 1;
-            transform: translateY(0);
-            transition: opacity 0.3s ease, transform 0.3s ease, max-height 0.3s ease;
-            max-height: 500px;
-            overflow: hidden;
-        }
-
-        .modal-section-title {
-            font-size: 1.1rem;
+            color: #ffffff;
+            font-size: 20px;
             font-weight: 600;
-            margin-bottom: 10px;
-            color: var(--notion-text);
         }
 
-        .slider-container {
-            margin-bottom: 15px;
-        }
-
-        .slider-label {
+        .title-text {
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            margin-bottom: 8px;
-            font-size: .95rem;
-            color: var(--notion-text);
-        }
-
-        input[type="range"] {
-            width: 100%;
-            -webkit-appearance: none;
-            height: 6px;
-            background: var(--notion-border);
-            border-radius: 3px;
-            outline: none;
-            opacity: .7;
-            transition: opacity .2s;
-        }
-
-            input[type="range"]::-webkit-slider-thumb {
-                -webkit-appearance: none;
-                appearance: none;
-                width: 18px;
-                height: 18px;
-                border-radius: 50%;
-                background: var(--notion-blue);
-                cursor: pointer;
-                box-shadow: 0 1px 3px rgba(0,0,0,0.2);
-            }
-
-        .slider-value {
-            font-weight: 500;
-            color: var(--notion-blue);
-        }
-
-        .button-group {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            margin-top: 10px;
-        }
-
-        .notion-button {
-            padding: 8px 15px;
-            border: 1px solid var(--notion-border);
-            border-radius: 5px;
-            background-color: var(--notion-button-bg);
-            color: var(--notion-text);
-            font-size: .9rem;
-            cursor: pointer;
-            transition: background-color .2s ease, border-color .2s ease;
-        }
-
-            .notion-button.selected {
-                background-color: var(--notion-blue);
-                color: #fff;
-                border-color: var(--notion-blue);
-            }
-
-            .notion-button[data-negative="true"].selected {
-                background-color: var(--notion-red);
-                border-color: var(--notion-red);
-                color: #fff;
-            }
-
-            .notion-button[data-value="optimal"].selected {
-                background-color: var(--notion-green);
-                border-color: var(--notion-green);
-                color: #fff;
-            }
-
-            .notion-button[data-value="eno23"].selected {
-                background-color: dodgerblue;
-                border-color: dodgerblue;
-                color: #fff;
-            }
-
-            .notion-button[data-value="very-little"].selected {
-                background-color: var(--notion-red);
-                border-color: var(--notion-red);
-                color: #fff;
-            }
-
-            .notion-button[data-value="little"].selected {
-                background-color: #ff7f50;
-                border-color: #ff7f50;
-                color: #fff;
-            }
-
-            .notion-button[data-value="enough"].selected {
-                background-color: var(--notion-green);
-                border-color: var(--notion-green);
-                color: #fff;
-            }
-
-            .notion-button[data-value="much"].selected {
-                background-color: #4682b4;
-                border-color: #4682b4;
-                color: #fff;
-            }
-
-            .notion-button[data-value="very-much"].selected {
-                background-color: #1e90ff;
-                border-color: #1e90ff;
-                color: #fff;
-            }
-
-        .notion-textarea {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid var(--notion-border);
-            border-radius: 5px;
-            resize: vertical;
-            min-height: 80px;
-            font-family: 'Roboto',sans-serif;
-            font-size: .95rem;
-            color: var(--notion-text);
-            background-color: #fff;
-            transition: border-color .2s ease;
-        }
-
-        .save-day-btn {
-            width: 100%;
-            padding: 12px 20px;
-            border: none;
-            border-radius: 15px;
-            background-color: var(--notion-blue);
-            color: #fff;
-            font-weight: 600;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: background-color .2s ease;
-            margin-top: 20px;
-        }
-
-        .day-indicators {
-            display: flex;
-            justify-content: center;
-            flex-wrap: wrap;
-            gap: 2px;
-            margin-top: auto;
-            min-height: 16px;
-        }
-
-        #toast-container {
-            position: fixed;
-            top: 10px;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 9999;
-            display: flex;
-            flex-direction: column;
             gap: 10px;
-            width: 320px;
-            pointer-events: none;
         }
 
-        .toast {
-            background-color: #333;
-            color: #fff;
-            padding: 16px 24px;
-            border-radius: 8px;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.3);
-            font-size: 16px;
-            opacity: 0;
-            animation: slideDown .3s forwards, fadeOut .3s forwards 2.7s;
-            pointer-events: auto;
+        .title-icon {
+            width: 24px;
+            height: 24px;
+            background: #409CFF;
+            border-radius: 6px;
         }
 
-        @keyframes slideDown {
-            from {
-                opacity: 0;
-                transform: translateY(-20px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+        .toggle-chevron {
+            width: 20px;
+            height: 20px;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white"><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/></svg>');
+            background-size: contain;
+            cursor: pointer;
+            transition: transform 0.3s ease;
         }
 
-        @keyframes fadeOut {
-            from {
-                opacity: 1;
-            }
-
-            to {
-                opacity: 0;
-            }
+        .toggle-chevron.collapsed {
+            transform: rotate(-90deg);
         }
 
-        .conditional-section {
-            display: none;
-            margin-bottom: 25px;
-        }
-
-        .calendar-day.today {
-            border: 2px solid #ff6b6b;
-            background-color: #fff5f5;
-        }
-
+        /* Health Score Styles */
         .health-score-container {
             display: flex;
             flex-direction: column;
-            align-items: center;
             gap: 20px;
         }
 
@@ -576,35 +78,30 @@
             position: relative;
             width: 200px;
             height: 200px;
+            margin: 0 auto;
         }
 
         .health-score-circle {
             width: 100%;
             height: 100%;
-            position: relative;
+            transform: rotate(-90deg);
         }
 
         .ring-circle {
-            cx: 100;
-            cy: 100;
-            r: 90;
             fill: none;
-            stroke-width: 6;
+            stroke-width: 10;
             stroke-linecap: round;
-            transform: rotate(-90deg);
-            transform-origin: 50% 50%;
         }
 
         .ring-background {
-            stroke: rgba(0, 0,0, 0.5);
-            ;
+            stroke: rgba(255, 255, 255, 0.1);
         }
 
         .ring-progress {
-            stroke: url(#ringGradient);
+            stroke: #409CFF;
             stroke-dasharray: 565;
             stroke-dashoffset: 565;
-            transition: stroke-dashoffset 1s ease-out;
+            transition: stroke-dashoffset 1s ease;
         }
 
         .ring-center {
@@ -613,260 +110,551 @@
             left: 50%;
             transform: translate(-50%, -50%);
             text-align: center;
-            width: 140px;
-            pointer-events: none;
         }
 
         .score-value {
-            font-size: 3.2rem;
+            font-size: 48px;
             font-weight: 700;
-            color: #000;
+            color: #ffffff;
             line-height: 1;
-            margin-bottom: 8px;
-            letter-spacing: -0.02em;
         }
 
         .score-label {
-            font-size: 0.85rem;
-            color: #000;
-            font-weight: 400;
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-        }
-
-        .health-score-details {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
-            width: 100%;
-            margin-top: 20px;
-            transition: all 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55);
-            max-height: 500px;
-            opacity: 1;
-            overflow: hidden;
-        }
-
-            .health-score-details.collapsed {
-                max-height: 0;
-                margin-top: 0;
-                margin-bottom: 0;
-                opacity: 0;
-                gap: 0;
-                transform: translateY(-10px);
-            }
-
-        .score-category {
-            border-radius: 20px;
-            padding: 12px;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            transition: all 0.3s ease;
-            position: relative;
-            aspect-ratio: 1 / 1;
-            overflow: hidden;
-        }
-
-            .score-category.sleep-category {
-                background-color: rgba(255, 255, 255, 0.6);
-                border: 1px solid rgba(0, 0, 0, 0.3);
-            }
-
-            .score-category.water-category {
-                background-color: rgba(255, 255, 255, 0.6);
-                border: 1px solid rgba(0, 0, 0, 0.3);
-            }
-
-            .score-category.activity-category {
-                background-color: rgba(255, 255, 255, 0.6);
-                border: 1px solid rgba(0, 0, 0, 0.3);
-            }
-
-            .score-category.mood-category {
-                background-color: rgba(255, 255, 255, 0.6);
-                border: 1px solid rgba(0, 0, 0, 0.3);
-            }
-
-        .category-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            flex-wrap: wrap;
-            gap: 5px;
-        }
-
-        .category-name {
-            font-size: 0.95rem;
-            color: #000;
-            font-weight: 500;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            flex-wrap: wrap;
-            max-width: 70%;
-        }
-
-        .category-score {
-            font-size: 1.1rem;
+            font-size: 16px;
+            color: #409CFF;
+            margin-top: 5px;
             font-weight: 600;
-            color: #000;
-            white-space: nowrap;
-        }
-
-        .score-bar {
-            height: 6px;
-            background-color: rgba(0, 0, 0, 0.2);
-            border-radius: 3px;
-            overflow: hidden;
-            margin-top: auto;
-        }
-
-        .score-fill {
-            height: 100%;
-            width: 0%;
-            transition: width 0.8s ease 0.3s;
-            border-radius: 3px;
         }
 
         .verdict-description {
             text-align: center;
-            font-size: 1rem;
-            margin-top: 10px;
+            font-size: 16px;
+            color: #888;
             font-weight: 500;
-            animation: fadeIn 0.5s ease;
-            color: #000;
-            line-height: 1.4;
-            padding: 0 10px;
         }
 
-        .day-saved-indicator {
-            position: absolute;
-            top: 3px;
-            right: 3px;
-            font-size: 0.7rem;
-            color: #28a745;
+        .health-score-details {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            transition: max-height 0.3s ease;
+            overflow: hidden;
+            max-height: 1000px;
         }
 
-        .day-activity-indicator {
-            font-size: 0.7rem;
-            margin: 0 1px;
+        .health-score-details.collapsed {
+            max-height: 0;
         }
 
-        .day-mood-indicator,
-        .day-sleep-indicator,
-        .day-water-indicator {
-            font-size: 0.7rem;
-            margin: 0 1px;
+        .score-category {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.07);
+        }
+
+        .category-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .category-name {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 600;
+            color: #ffffff;
+        }
+
+        .category-icon {
+            font-size: 16px;
+        }
+
+        .category-score {
+            font-weight: 700;
+            font-size: 18px;
+            color: #409CFF;
+        }
+
+        .score-bar {
+            height: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+            overflow: hidden;
+            margin-bottom: 8px;
+        }
+
+        .score-fill {
+            height: 100%;
+            border-radius: 3px;
+            transition: width 0.8s ease;
+        }
+
+        .score-description {
+            font-size: 13px;
+            color: #888;
+        }
+
+        /* Calendar Styles */
+        .calendar {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.07);
+        }
+
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .calendar-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #ffffff;
+        }
+
+        .calendar-nav-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .streak-container {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .streak-fire {
+            font-size: 24px;
+        }
+
+        .streak-fire.active {
+            animation: flame-pulse 0.5s ease-in-out;
+        }
+
+        .streak-fire.inactive {
+            opacity: 0.3;
+        }
+
+        .streak-count {
+            color: #ffffff;
+            font-weight: 600;
+            font-size: 16px;
+        }
+
+        .calendar-nav {
+            display: flex;
+            gap: 10px;
+        }
+
+        .calendar-nav-btn {
+            background: rgba(64, 156, 255, 0.1);
+            border: 1px solid rgba(64, 156, 255, 0.2);
+            color: #409CFF;
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+
+        .calendar-nav-btn:hover {
+            background: rgba(64, 156, 255, 0.2);
+            transform: translateY(-1px);
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+
+        .calendar-day-header {
+            text-align: center;
+            font-weight: 600;
+            color: #888;
+            padding: 10px;
+            font-size: 14px;
+        }
+
+        .calendar-day {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 8px;
+            padding: 12px;
+            text-align: center;
+            cursor: pointer;
+            position: relative;
+            border: 1px solid transparent;
+            transition: all 0.2s ease;
+            min-height: 60px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .calendar-day:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(64, 156, 255, 0.2);
+            transform: translateY(-1px);
+        }
+
+        .calendar-day.today {
+            border-color: #409CFF;
+            background: rgba(64, 156, 255, 0.1);
+        }
+
+        .calendar-day.saved {
+            background: rgba(76, 175, 80, 0.1);
+            border-color: rgba(76, 175, 80, 0.2);
+        }
+
+        .calendar-day-number {
+            font-size: 16px;
+            font-weight: 600;
+            color: #ffffff;
+            margin-bottom: 4px;
         }
 
         .saved-day-checkmark {
             position: absolute;
-            top: 3px;
-            right: 3px;
-            font-size: 0.8rem;
-            color: var(--saved-day-text);
-            font-weight: bold;
+            top: 5px;
+            right: 5px;
+            color: #4CAF50;
+            font-size: 12px;
         }
 
-        .score-description {
-            color: #000;
-            font-size: 0.8rem;
-            line-height: 1.3;
-            margin-top: 4px;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            flex-grow: 1;
+        .day-indicators {
+            display: flex;
+            gap: 2px;
+            justify-content: center;
         }
 
-        /* Р”Р»СЏ РѕС‡РµРЅСЊ РјР°Р»РµРЅСЊРєРёС… СЌРєСЂР°РЅРѕРІ */
-        @media (max-width: 360px) {
-            .score-category {
+        .indicator-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #409CFF;
+        }
+
+        .calendar-day.empty {
+            visibility: hidden;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(4px);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal-content {
+            background: rgba(20, 20, 25, 0.95);
+            border-radius: 20px;
+            width: 100%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .modal-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #ffffff;
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            color: #888;
+            font-size: 28px;
+            cursor: pointer;
+            line-height: 1;
+            padding: 0;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: all 0.2s ease;
+        }
+
+        .close-modal:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: #ffffff;
+        }
+
+        .modal-section {
+            padding: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .modal-section-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #ffffff;
+            margin-bottom: 15px;
+        }
+
+        .slider-container {
+            margin-bottom: 20px;
+        }
+
+        .slider-label {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            color: #ffffff;
+            font-weight: 500;
+        }
+
+        .slider-value {
+            color: #409CFF;
+            font-weight: 600;
+            background: rgba(64, 156, 255, 0.1);
+            padding: 4px 10px;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            height: 6px;
+            -webkit-appearance: none;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+            outline: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #409CFF;
+            cursor: pointer;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 2px 8px rgba(64, 156, 255, 0.3);
+        }
+
+        .button-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .notion-button {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #ffffff;
+            padding: 10px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 14px;
+            transition: all 0.2s ease;
+            flex: 1;
+            min-width: 120px;
+        }
+
+        .notion-button:hover {
+            background: rgba(255, 255, 255, 0.08);
+            transform: translateY(-1px);
+        }
+
+        .notion-button.selected {
+            background: rgba(64, 156, 255, 0.2);
+            border-color: #409CFF;
+            color: #409CFF;
+            font-weight: 600;
+        }
+
+        .notion-button[data-negative="true"].selected {
+            background: rgba(255, 71, 87, 0.2);
+            border-color: #ff4757;
+            color: #ff6b81;
+        }
+
+        .conditional-section {
+            display: none;
+        }
+
+        .notion-textarea {
+            width: 100%;
+            min-height: 100px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 12px;
+            color: #ffffff;
+            font-family: 'Roboto', sans-serif;
+            resize: vertical;
+        }
+
+        .notion-textarea:focus {
+            outline: none;
+            border-color: #409CFF;
+        }
+
+        .save-day-btn {
+            width: calc(100% - 40px);
+            margin: 20px;
+            background: linear-gradient(135deg, #409CFF, #2d87ff);
+            color: white;
+            border: none;
+            padding: 14px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(64, 156, 255, 0.3);
+        }
+
+        .save-day-btn:hover {
+            background: linear-gradient(135deg, #2d87ff, #1a74ff);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(64, 156, 255, 0.4);
+        }
+
+        /* Toast */
+        #toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 10000;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .toast {
+            background: rgba(20, 20, 25, 0.95);
+            backdrop-filter: blur(20px);
+            color: white;
+            padding: 14px 24px;
+            border-radius: 12px;
+            animation: fadeInOut 3s ease-in-out;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+            font-weight: 500;
+        }
+
+        @keyframes fadeInOut {
+            0% { opacity: 0; transform: translateY(-20px); }
+            10% { opacity: 1; transform: translateY(0); }
+            90% { opacity: 1; transform: translateY(0); }
+            100% { opacity: 0; transform: translateY(-20px); }
+        }
+
+        @keyframes flame-pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+
+        /* Адаптивность */
+        @media (max-width: 600px) {
+            body {
                 padding: 10px;
-                gap: 6px;
             }
 
-            .category-name {
-                font-size: 0.85rem;
+            .section {
+                padding: 15px;
+            }
+
+            .calendar-header {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .calendar-nav-wrapper {
+                justify-content: space-between;
+            }
+
+            .calendar-grid {
                 gap: 4px;
             }
 
-            .category-score {
-                font-size: 1rem;
+            .calendar-day {
+                padding: 8px;
+                min-height: 50px;
             }
 
-            .score-description {
-                font-size: 0.75rem;
-                -webkit-line-clamp: 1;
+            .calendar-day-number {
+                font-size: 14px;
             }
 
-            .health-score-details {
-                gap: 10px;
+            .button-group {
+                flex-direction: column;
             }
-        }
 
-        @media (max-width: 480px) {
-            .section {
+            .notion-button {
+                min-width: auto;
+            }
+
+            .modal-content {
+                margin: 10px;
+                max-height: 85vh;
+            }
+
+            .modal-section {
                 padding: 15px;
-                border-radius: 20px;
-            }
-
-            .section-title {
-                font-size: 1.3rem;
-            }
-
-            .health-score-circle-wrapper {
-                width: 160px;
-                height: 160px;
-            }
-
-            .score-value {
-                font-size: 2.5rem;
             }
         }
 
-        /* Р”Р»СЏ СЃСЂРµРґРЅРёС… Рё Р±РѕР»СЊС€РёС… СЌРєСЂР°РЅРѕРІ - СѓРІРµР»РёС‡РёРІР°РµРј РєРІР°РґСЂР°С‚С‹ */
-        @media (min-width: 481px) {
-            .health-score-details {
-                gap: 15px;
-            }
-
-            .score-category {
-                padding: 15px;
-                gap: 10px;
-            }
-
-            .category-name {
-                font-size: 1rem;
-            }
-
-            .category-score {
-                font-size: 1.2rem;
-            }
-
-            .score-bar {
-                height: 8px;
-            }
-
-            .score-description {
-                font-size: 0.85rem;
-                -webkit-line-clamp: 3;
-            }
+        /* Цвета для Health Score */
+        :root {
+            --excellent-color: #4CAF50;
+            --good-color: #8BC34A;
+            --fair-color: #FFC107;
+            --poor-color: #F44336;
         }
 
-        /* РђРЅРёРјР°С†РёСЏ РґР»СЏ РїРѕСЏРІР»РµРЅРёСЏ */
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(10px);
-            }
+        .sleep-category .score-fill {
+            background-color: #2196F3;
+        }
 
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+        .water-category .score-fill {
+            background-color: #00BCD4;
+        }
+
+        .mood-category .score-fill {
+            background-color: #9C27B0;
+        }
+
+        .activity-category .score-fill {
+            background-color: #FF9800;
         }
     </style>
 </head>
@@ -913,7 +701,7 @@
                 <div class="calendar-title" id="current-month-year">June 2023</div>
                 <div class="calendar-nav-wrapper">
                     <div class="streak-container">
-                        <div class="streak-fire" id="streak-fire">рџ”Ґ</div>
+                        <div class="streak-fire" id="streak-fire">🔥</div>
                         <div class="streak-count" id="streak-count">0</div>
                     </div>
                     <div class="calendar-nav">
@@ -970,7 +758,7 @@
                 <div class="modal-section-title">Water Intake</div>
                 <div class="button-group" id="water-intake-buttons">
                     <button class="notion-button" data-value="optimal">Optimal</button>
-                    <button class="notion-button" data-value="eno23">Enough</button>
+                    <button class="notion-button" data-value="enough">Enough</button>
                     <button class="notion-button" data-value="little">Little</button>
                     <button class="notion-button" data-value="too-little" data-negative="true">Too Little</button>
                 </div>
@@ -1039,82 +827,150 @@
     <div id="toast-container"></div>
 
     <script>
-        // =================== РќРћР’РђРЇ Р›РћР“РРљРђ HEALTH SCORE ===================
+        // =================== КОНФИГУРАЦИЯ LOCALSTORAGE ===================
+        const DAYS_STORAGE_KEY = 'health_tracker_days';
+        const STREAK_STORAGE_KEY = 'health_tracker_streak';
+        const LAST_SAVED_DATE_KEY = 'health_tracker_last_saved_date';
 
-        // РљРѕРЅС„РёРіСѓСЂР°С†РёСЏ СЂР°СЃС‡РµС‚Р° Health Score
+        // =================== КОНФИГУРАЦИЯ HEALTH SCORE ===================
         const HEALTH_SCORE_CONFIG = {
             sleep: {
-                weight: 40, // 40%
+                weight: 40,
                 optimalHours: { min: 7, max: 8 },
                 scores: {
-                    optimal: 100,     // 7-8 С‡Р°СЃРѕРІ
-                    good: 80,        // 6-7 РёР»Рё 8-9 С‡Р°СЃРѕРІ
-                    fair: 60,        // 5-6 РёР»Рё 9-10 С‡Р°СЃРѕРІ
-                    poor: 40,        // 4-5 С‡Р°СЃРѕРІ
-                    veryPoor: 20     // <4 РёР»Рё >10 С‡Р°СЃРѕРІ
+                    optimal: 100,
+                    good: 80,
+                    fair: 60,
+                    poor: 40,
+                    veryPoor: 20
                 },
-                poorSleepPenalty: 30, // РЁС‚СЂР°С„ Р·Р° РїР»РѕС…РѕР№ СЃРѕРЅ
-                symptomPenalty: 10    // РЁС‚СЂР°С„ Р·Р° РєР°Р¶РґС‹Р№ СЃРёРјРїС‚РѕРј СЃРЅР°
+                poorSleepPenalty: 30,
+                symptomPenalty: 10
             },
             water: {
-                weight: 20, // 20%
+                weight: 20,
                 scores: {
                     'optimal': 100,
                     'enough': 80,
-                    'eno23': 80,
-                    'much': 70,
-                    'very-much': 60,
                     'little': 40,
-                    'too-little': 20,
-                    'very-little': 10
+                    'too-little': 20
                 },
-                symptomPenalty: 15    // РЁС‚СЂР°С„ Р·Р° РєР°Р¶РґС‹Р№ СЃРёРјРїС‚РѕРј РѕР±РµР·РІРѕР¶РёРІР°РЅРёСЏ
+                symptomPenalty: 15
             },
             mood: {
-                weight: 20, // 20%
+                weight: 20,
                 scores: {
-                    10: 100,
-                    9: 90,
-                    8: 80,
-                    7: 70,
-                    6: 60,
-                    5: 50,
-                    4: 40,
-                    3: 30,
-                    2: 20,
-                    1: 10
+                    10: 100, 9: 90, 8: 80, 7: 70, 6: 60, 5: 50,
+                    4: 40, 3: 30, 2: 20, 1: 10
                 },
-                lowMoodPenalty: 25,   // РЁС‚СЂР°С„ Р·Р° РЅР°СЃС‚СЂРѕРµРЅРёРµ в‰¤ 4
-                symptomPenalty: 10    // РЁС‚СЂР°С„ Р·Р° РєР°Р¶РґС‹Р№ СЃРёРјРїС‚РѕРј РЅР°СЃС‚СЂРѕРµРЅРёСЏ
+                lowMoodPenalty: 25,
+                symptomPenalty: 10
             },
             activity: {
-                weight: 20, // 20%
+                weight: 20,
                 optimalRange: { min: 5, max: 7 },
                 scores: {
-                    10: 90,
-                    9: 85,
-                    8: 80,
-                    7: 75,
-                    6: 70,
-                    5: 65,
-                    4: 55,
-                    3: 45,
-                    2: 35,
-                    1: 25
+                    10: 90, 9: 85, 8: 80, 7: 75, 6: 70, 5: 65,
+                    4: 55, 3: 45, 2: 35, 1: 25
                 },
-                lowActivityPenalty: 20,  // РЁС‚СЂР°С„ Р·Р° Р°РєС‚РёРІРЅРѕСЃС‚СЊ в‰¤ 3
-                highActivityPenalty: 15, // РЁС‚СЂР°С„ Р·Р° Р°РєС‚РёРІРЅРѕСЃС‚СЊ в‰Ґ 8
-                symptomPenalty: 10       // РЁС‚СЂР°С„ Р·Р° РєР°Р¶РґС‹Р№ СЃРёРјРїС‚РѕРј Р°РєС‚РёРІРЅРѕСЃС‚Рё
+                lowActivityPenalty: 20,
+                highActivityPenalty: 15,
+                symptomPenalty: 10
             }
         };
 
-        // Р¤СѓРЅРєС†РёСЏ СЂР°СЃС‡РµС‚Р° РѕС‡РєРѕРІ СЃРЅР°
+        // =================== ФУНКЦИИ ДЛЯ РАБОТЫ С LOCALSTORAGE ===================
+        function getDaysFromStorage() {
+            try {
+                const days = localStorage.getItem(DAYS_STORAGE_KEY);
+                return days ? JSON.parse(days) : {};
+            } catch (error) {
+                console.error('Error reading days from localStorage:', error);
+                return {};
+            }
+        }
+
+        function saveDayToStorage(date, dayData) {
+            try {
+                const days = getDaysFromStorage();
+                days[date] = {
+                    ...dayData,
+                    savedAt: new Date().toISOString()
+                };
+                localStorage.setItem(DAYS_STORAGE_KEY, JSON.stringify(days));
+                return true;
+            } catch (error) {
+                console.error('Error saving day to localStorage:', error);
+                return false;
+            }
+        }
+
+        function getDayFromStorage(date) {
+            const days = getDaysFromStorage();
+            return days[date] || null;
+        }
+
+        function getStreakFromStorage() {
+            try {
+                const streakData = localStorage.getItem(STREAK_STORAGE_KEY);
+                return streakData ? JSON.parse(streakData) : { currentStreak: 0, lastDate: null };
+            } catch (error) {
+                console.error('Error reading streak from localStorage:', error);
+                return { currentStreak: 0, lastDate: null };
+            }
+        }
+
+        function updateStreakInStorage(date) {
+            try {
+                const streakData = getStreakFromStorage();
+                const today = new Date(date);
+                const lastDate = streakData.lastDate ? new Date(streakData.lastDate) : null;
+                
+                let currentStreak = streakData.currentStreak;
+                let streakIncremented = false;
+                
+                if (lastDate) {
+                    const dayDiff = Math.floor((today - lastDate) / (1000 * 60 * 60 * 24));
+                    
+                    if (dayDiff === 1) {
+                        // Последовательные дни
+                        currentStreak++;
+                        streakIncremented = true;
+                    } else if (dayDiff > 1) {
+                        // Пропущены дни
+                        currentStreak = 1;
+                    }
+                    // dayDiff === 0: тот же день, не меняем streak
+                } else {
+                    // Первая запись
+                    currentStreak = 1;
+                    streakIncremented = true;
+                }
+                
+                const newStreakData = {
+                    currentStreak: currentStreak,
+                    lastDate: today.toISOString().split('T')[0]
+                };
+                
+                localStorage.setItem(STREAK_STORAGE_KEY, JSON.stringify(newStreakData));
+                
+                return {
+                    success: true,
+                    currentStreak: currentStreak,
+                    streakIncremented: streakIncremented
+                };
+            } catch (error) {
+                console.error('Error updating streak:', error);
+                return { success: false, currentStreak: 0, streakIncremented: false };
+            }
+        }
+
+        // =================== HEALTH SCORE ФУНКЦИИ ===================
         function calculateSleepScore(sleepHours, sleepQuality, sleepIssues) {
-            let baseScore;
+            let baseScore = 0;
 
             if (!sleepHours) return 0;
 
-            // Р‘Р°Р»Р»С‹ Р·Р° РєРѕР»РёС‡РµСЃС‚РІРѕ С‡Р°СЃРѕРІ СЃРЅР°
             if (sleepHours >= 7 && sleepHours <= 8) {
                 baseScore = HEALTH_SCORE_CONFIG.sleep.scores.optimal;
             } else if ((sleepHours >= 6 && sleepHours < 7) || (sleepHours > 8 && sleepHours <= 9)) {
@@ -1127,84 +983,52 @@
                 baseScore = HEALTH_SCORE_CONFIG.sleep.scores.veryPoor;
             }
 
-            // РЁС‚СЂР°С„ Р·Р° РїР»РѕС…РѕР№ СЃРѕРЅ
             if (sleepQuality === 'poor-sleep') {
                 baseScore -= HEALTH_SCORE_CONFIG.sleep.poorSleepPenalty;
             }
 
-            // РЁС‚СЂР°С„ Р·Р° СЃРёРјРїС‚РѕРјС‹ СЃРЅР°
             if (sleepIssues && sleepIssues.length > 0) {
                 const symptomPenalty = sleepIssues.length * HEALTH_SCORE_CONFIG.sleep.symptomPenalty;
                 baseScore -= symptomPenalty;
             }
 
-            // Р“Р°СЂР°РЅС‚РёСЂСѓРµРј, С‡С‚Рѕ Р±Р°Р»Р»С‹ РЅРµ СѓР№РґСѓС‚ РІ РјРёРЅСѓСЃ
             return Math.max(0, Math.min(100, baseScore));
         }
 
-        // Р¤СѓРЅРєС†РёСЏ СЂР°СЃС‡РµС‚Р° РѕС‡РєРѕРІ РІРѕРґС‹
         function calculateWaterScore(waterIntake, dehydrationSymptoms) {
             if (!waterIntake) return 0;
-
             let baseScore = HEALTH_SCORE_CONFIG.water.scores[waterIntake] || 50;
-
-            // РЁС‚СЂР°С„ Р·Р° СЃРёРјРїС‚РѕРјС‹ РѕР±РµР·РІРѕР¶РёРІР°РЅРёСЏ
             if (dehydrationSymptoms && dehydrationSymptoms.length > 0) {
                 const symptomPenalty = dehydrationSymptoms.length * HEALTH_SCORE_CONFIG.water.symptomPenalty;
                 baseScore -= symptomPenalty;
             }
-
             return Math.max(0, Math.min(100, baseScore));
         }
 
-        // Р¤СѓРЅРєС†РёСЏ СЂР°СЃС‡РµС‚Р° РѕС‡РєРѕРІ РЅР°СЃС‚СЂРѕРµРЅРёСЏ
         function calculateMoodScore(mood, moodRelated) {
             if (!mood) return 0;
-
             let baseScore = HEALTH_SCORE_CONFIG.mood.scores[mood] || 50;
-
-            // РЁС‚СЂР°С„ Р·Р° РЅРёР·РєРѕРµ РЅР°СЃС‚СЂРѕРµРЅРёРµ
-            if (mood <= 4) {
-                baseScore -= HEALTH_SCORE_CONFIG.mood.lowMoodPenalty;
-            }
-
-            // РЁС‚СЂР°С„ Р·Р° СЃРёРјРїС‚РѕРјС‹ РЅР°СЃС‚СЂРѕРµРЅРёСЏ
+            if (mood <= 4) baseScore -= HEALTH_SCORE_CONFIG.mood.lowMoodPenalty;
             if (moodRelated && moodRelated.length > 0) {
                 const symptomPenalty = moodRelated.length * HEALTH_SCORE_CONFIG.mood.symptomPenalty;
                 baseScore -= symptomPenalty;
             }
-
             return Math.max(0, Math.min(100, baseScore));
         }
 
-        // Р¤СѓРЅРєС†РёСЏ СЂР°СЃС‡РµС‚Р° РѕС‡РєРѕРІ Р°РєС‚РёРІРЅРѕСЃС‚Рё
         function calculateActivityScore(activityLevel, activityIssues) {
             if (!activityLevel) return 0;
-
             let baseScore = HEALTH_SCORE_CONFIG.activity.scores[activityLevel] || 50;
-
-            // РЁС‚СЂР°С„ Р·Р° РЅРёР·РєСѓСЋ Р°РєС‚РёРІРЅРѕСЃС‚СЊ
-            if (activityLevel <= 3) {
-                baseScore -= HEALTH_SCORE_CONFIG.activity.lowActivityPenalty;
-            }
-
-            // РЁС‚СЂР°С„ Р·Р° РІС‹СЃРѕРєСѓСЋ Р°РєС‚РёРІРЅРѕСЃС‚СЊ
-            if (activityLevel >= 8) {
-                baseScore -= HEALTH_SCORE_CONFIG.activity.highActivityPenalty;
-            }
-
-            // РЁС‚СЂР°С„ Р·Р° СЃРёРјРїС‚РѕРјС‹ Р°РєС‚РёРІРЅРѕСЃС‚Рё
+            if (activityLevel <= 3) baseScore -= HEALTH_SCORE_CONFIG.activity.lowActivityPenalty;
+            if (activityLevel >= 8) baseScore -= HEALTH_SCORE_CONFIG.activity.highActivityPenalty;
             if (activityIssues && activityIssues.length > 0) {
                 const symptomPenalty = activityIssues.length * HEALTH_SCORE_CONFIG.activity.symptomPenalty;
                 baseScore -= symptomPenalty;
             }
-
             return Math.max(0, Math.min(100, baseScore));
         }
 
-        // РћСЃРЅРѕРІРЅР°СЏ С„СѓРЅРєС†РёСЏ СЂР°СЃС‡РµС‚Р° Health Score
         function calculateHealthScore(dayData) {
-            // Р Р°СЃСЃС‡РёС‚С‹РІР°РµРј Р±Р°Р»Р»С‹ РїРѕ РєР°Р¶РґРѕР№ РєР°С‚РµРіРѕСЂРёРё
             const sleepScore = calculateSleepScore(
                 dayData.sleepHours,
                 dayData.sleepQuality,
@@ -1226,7 +1050,6 @@
                 dayData.activityIssues
             );
 
-            // Р’Р·РІРµС€РµРЅРЅР°СЏ СЃСѓРјРјР°
             const weightedSleep = sleepScore * (HEALTH_SCORE_CONFIG.sleep.weight / 100);
             const weightedWater = waterScore * (HEALTH_SCORE_CONFIG.water.weight / 100);
             const weightedMood = moodScore * (HEALTH_SCORE_CONFIG.mood.weight / 100);
@@ -1234,7 +1057,6 @@
 
             const overallScore = Math.round(weightedSleep + weightedWater + weightedMood + weightedActivity);
 
-            // Р’РѕР·РІСЂР°С‰Р°РµРј РґРµС‚Р°Р»РёР·РёСЂРѕРІР°РЅРЅС‹Рµ СЂРµР·СѓР»СЊС‚Р°С‚С‹
             return {
                 overallScore,
                 categories: [
@@ -1243,35 +1065,34 @@
                         score: sleepScore,
                         weight: HEALTH_SCORE_CONFIG.sleep.weight,
                         description: getSleepDescription(dayData.sleepHours, dayData.sleepQuality, dayData.sleepIssues),
-                        icon: ''
+                        icon: '😴'
                     },
                     {
                         name: 'Water',
                         score: waterScore,
                         weight: HEALTH_SCORE_CONFIG.water.weight,
                         description: getWaterDescription(dayData.waterIntake, dayData.dehydrationSymptoms),
-                        icon: ''
+                        icon: '💧'
                     },
                     {
                         name: 'Mood',
                         score: moodScore,
                         weight: HEALTH_SCORE_CONFIG.mood.weight,
                         description: getMoodDescription(dayData.mood, dayData.moodRelated),
-                        icon: ''
+                        icon: '😊'
                     },
                     {
                         name: 'Activity',
                         score: activityScore,
                         weight: HEALTH_SCORE_CONFIG.activity.weight,
                         description: getActivityDescription(dayData.activityLevel, dayData.activityIssues),
-                        icon: ''
+                        icon: '🏃'
                     }
                 ],
                 verdict: getVerdict(overallScore)
             };
         }
 
-        // Р’СЃРїРѕРјРѕРіР°С‚РµР»СЊРЅС‹Рµ С„СѓРЅРєС†РёРё РґР»СЏ РѕРїРёСЃР°РЅРёР№
         function getSleepDescription(hours, quality, issues) {
             let desc = hours ? `${hours} hours` : 'No data';
             if (quality === 'poor-sleep') desc += ' (poor quality)';
@@ -1297,54 +1118,71 @@
             return desc;
         }
 
-        // Р¤СѓРЅРєС†РёСЏ РґР»СЏ РїРѕР»СѓС‡РµРЅРёСЏ РІРµСЂРґРёРєС‚Р° РїРѕ РѕР±С‰РµРјСѓ Р±Р°Р»Р»Сѓ
         function getVerdict(score) {
-            if (score >= 90) {
-                return {
-                    level: 'Excellent',
-                    description: 'Outstanding health habits!',
-                    color: '#4CAF50',
-                    emoji: 'рџЊџ'
-                };
-            } else if (score >= 80) {
-                return {
-                    level: 'Great',
-                    description: 'Very healthy lifestyle!',
-                    color: '#8BC34A',
-                    emoji: 'рџ’Є'
-                };
-            } else if (score >= 70) {
-                return {
-                    level: 'Good',
-                    description: 'Solid health metrics.',
-                    color: '#FFC107',
-                    emoji: 'рџ‘Ќ'
-                };
-            } else if (score >= 60) {
-                return {
-                    level: 'Fair',
-                    description: 'Room for improvement.',
-                    color: '#FF9800',
-                    emoji: 'вљ пёЏ'
-                };
-            } else if (score >= 50) {
-                return {
-                    level: 'Needs Work',
-                    description: 'Focus on healthier choices.',
-                    color: '#F44336',
-                    emoji: 'рџ“‰'
-                };
+            if (score >= 90) return { level: 'Excellent', description: 'Outstanding health habits!', color: '#4CAF50', emoji: '🌟' };
+            else if (score >= 80) return { level: 'Great', description: 'Very healthy lifestyle!', color: '#8BC34A', emoji: '💪' };
+            else if (score >= 70) return { level: 'Good', description: 'Solid health metrics.', color: '#FFC107', emoji: '👌' };
+            else if (score >= 60) return { level: 'Fair', description: 'Room for improvement.', color: '#FF9800', emoji: '⚖️' };
+            else if (score >= 50) return { level: 'Needs Work', description: 'Focus on healthier choices.', color: '#F44336', emoji: '📉' };
+            else return { level: 'Poor', description: 'Significant improvements needed.', color: '#D32F2F', emoji: '⚠️' };
+        }
+
+        function getScoreColor(score) {
+            if (score >= 80) return 'var(--excellent-color)';
+            if (score >= 60) return 'var(--good-color)';
+            if (score >= 40) return 'var(--fair-color)';
+            return 'var(--poor-color)';
+        }
+
+        // =================== UI ФУНКЦИИ ===================
+        let currentDate = new Date();
+        let currentYear = currentDate.getFullYear();
+        let currentMonth = currentDate.getMonth();
+        let selectedDay = null;
+
+        // DOM элементы
+        let currentMonthYear, calendarDays, dayModal, modalDayTitle, closeModal;
+        let sleepSlider, sleepValueDisplay, sleepQualityButtons;
+        let waterIntakeButtons, moodSlider, moodValueDisplay, activitySlider, activityValueDisplay;
+        let dayNotes, saveDayBtn;
+        let sleepIssuesSection, dehydrationSection, moodRelatedSection, activityIssuesSection;
+        let sleepIssuesButtons, dehydrationButtons, moodRelatedButtons, activityIssuesButtons;
+        let prevMonthBtn, nextMonthBtn;
+
+        function showToast(message) {
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.textContent = message;
+            const toastContainer = document.getElementById('toast-container');
+            toastContainer.appendChild(toast);
+            setTimeout(() => {
+                if (toast.parentNode === toastContainer) {
+                    toastContainer.removeChild(toast);
+                }
+            }, 3000);
+        }
+
+        async function updateStreakDisplay() {
+            const streakFire = document.getElementById('streak-fire');
+            const streakCount = document.getElementById('streak-count');
+
+            const streakData = getStreakFromStorage();
+            const currentStreak = streakData.currentStreak || 0;
+
+            streakCount.textContent = currentStreak;
+            streakCount.style.display = 'block';
+
+            if (currentStreak > 0) {
+                streakFire.className = 'streak-fire active';
+                streakFire.style.animation = 'flame-pulse 0.5s ease-in-out';
+                setTimeout(() => {
+                    streakFire.style.animation = '';
+                }, 500);
             } else {
-                return {
-                    level: 'Poor',
-                    description: 'Significant improvements needed.',
-                    color: '#D32F2F',
-                    emoji: 'рџљЁ'
-                };
+                streakFire.className = 'streak-fire inactive';
             }
         }
 
-        // Р¤СѓРЅРєС†РёСЏ РґР»СЏ РѕР±РЅРѕРІР»РµРЅРёСЏ Health Score РЅР° СЃС‚СЂР°РЅРёС†Рµ
         function updateHealthScoreDisplay(healthScoreData) {
             const healthScoreElement = document.getElementById('health-score');
             const healthLabelElement = document.getElementById('health-label');
@@ -1363,11 +1201,9 @@
 
             const { overallScore, categories, verdict } = healthScoreData;
 
-            // РћР±РЅРѕРІР»СЏРµРј РѕСЃРЅРѕРІРЅРѕР№ Р±Р°Р»Р»
             healthScoreElement.textContent = overallScore;
             healthLabelElement.innerHTML = `${verdict.emoji} ${verdict.level}`;
 
-            // РћР±РЅРѕРІР»СЏРµРј РєРѕР»СЊС†РµРІРѕР№ РїСЂРѕРіСЂРµСЃСЃ
             const circumference = 2 * Math.PI * 90;
             const offset = circumference - (overallScore / 100) * circumference;
 
@@ -1375,11 +1211,9 @@
                 ringProgress.style.strokeDashoffset = offset;
             }, 100);
 
-            // РћР±РЅРѕРІР»СЏРµРј РІРµСЂРґРёРєС‚
             verdictElement.textContent = verdict.description;
             verdictElement.style.color = verdict.color;
 
-            // РћР±РЅРѕРІР»СЏРµРј РґРµС‚Р°Р»Рё
             let detailsHTML = '';
             categories.forEach(category => {
                 const categoryColor = getScoreColor(category.score);
@@ -1403,7 +1237,6 @@
 
             detailsContainer.innerHTML = detailsHTML;
 
-            // РђРЅРёРјР°С†РёСЏ Р·Р°РїРѕР»РЅРµРЅРёСЏ
             setTimeout(() => {
                 const scoreFills = document.querySelectorAll('.score-fill');
                 scoreFills.forEach(fill => {
@@ -1416,13 +1249,12 @@
             }, 300);
         }
 
-        // Р¤СѓРЅРєС†РёСЏ РґР»СЏ РѕС‚РѕР±СЂР°Р¶РµРЅРёСЏ РїСѓСЃС‚РѕРіРѕ Health Score
         function displayEmptyHealthScore() {
             const categories = [
-                { name: 'Sleep', weight: 40, color: '#2196F3', description: 'Track your sleep', icon: 'рџ’¤' },
-                { name: 'Water', weight: 20, color: '#00BCD4', description: 'Record water intake', icon: 'рџ’§' },
-                { name: 'Activity', weight: 20, color: '#FF9800', description: 'Log activity level', icon: 'рџЏѓ' },
-                { name: 'Mood', weight: 20, color: '#9C27B0', description: 'Track your mood', icon: 'рџЉ' }
+                { name: 'Sleep', weight: 40, color: '#2196F3', description: 'Track your sleep', icon: '😴' },
+                { name: 'Water', weight: 20, color: '#00BCD4', description: 'Record water intake', icon: '💧' },
+                { name: 'Activity', weight: 20, color: '#FF9800', description: 'Log activity level', icon: '🏃' },
+                { name: 'Mood', weight: 20, color: '#9C27B0', description: 'Track your mood', icon: '😊' }
             ];
 
             let detailsHTML = '';
@@ -1447,15 +1279,6 @@
             document.getElementById('health-score-details').innerHTML = detailsHTML;
         }
 
-        // Р¤СѓРЅРєС†РёСЏ РґР»СЏ РїРѕР»СѓС‡РµРЅРёСЏ С†РІРµС‚Р° РїРѕ Р±Р°Р»Р»Сѓ
-        function getScoreColor(score) {
-            if (score >= 80) return 'var(--excellent-color)';
-            if (score >= 60) return 'var(--good-color)';
-            if (score >= 40) return 'var(--fair-color)';
-            return 'var(--poor-color)';
-        }
-
-        // Р¤СѓРЅРєС†РёСЏ Р·Р°РіСЂСѓР·РєРё Health Score
         async function loadHealthScore() {
             const healthScoreElement = document.getElementById('health-score');
             const healthLabelElement = document.getElementById('health-label');
@@ -1467,7 +1290,6 @@
                 healthLabelElement.textContent = 'Calculating...';
                 verdictElement.textContent = '';
 
-                // РџРѕР»СѓС‡Р°РµРј РїРѕСЃР»РµРґРЅРёРµ РґР°РЅРЅС‹Рµ РґРЅСЏ РґР»СЏ СЂР°СЃС‡РµС‚Р°
                 const healthScoreData = await calculateCurrentHealthScore();
 
                 if (healthScoreData) {
@@ -1489,10 +1311,8 @@
             }
         }
 
-        // Р¤СѓРЅРєС†РёСЏ СЂР°СЃС‡РµС‚Р° Health Score РЅР° РѕСЃРЅРѕРІРµ С‚РµРєСѓС‰РёС… РґР°РЅРЅС‹С… РІ РјРѕРґР°Р»РєРµ
         async function calculateCurrentHealthScore() {
             try {
-                // РЎРѕР±РёСЂР°РµРј РґР°РЅРЅС‹Рµ РёР· РјРѕРґР°Р»РєРё (РµСЃР»Рё РѕРЅР° РѕС‚РєСЂС‹С‚Р°)
                 let dayData = {
                     sleepHours: parseFloat(sleepSlider?.value) || null,
                     sleepQuality: getSelectedValue(sleepQualityButtons) || '',
@@ -1505,38 +1325,20 @@
                     activityIssues: getSelectedValues(activityIssuesButtons) || []
                 };
 
-                // Р•СЃР»Рё РµСЃС‚СЊ СЃРѕС…СЂР°РЅРµРЅРЅС‹Рµ РґР°РЅРЅС‹Рµ РґР»СЏ СЃРµРіРѕРґРЅСЏ, РёСЃРїРѕР»СЊР·СѓРµРј РёС…
-                const token = localStorage.getItem('token');
                 const today = new Date().toISOString().split('T')[0];
-
-                if (token) {
-                    try {
-                        const response = await fetch(`${API_URL}/day?date=${today}`, {
-                            headers: { 'Authorization': `Bearer ${token}` }
-                        });
-
-                        if (response.ok) {
-                            const data = await response.json();
-                            if (data.success && data.dayData) {
-                                // РћР±СЉРµРґРёРЅСЏРµРј СЃ С‚РµРєСѓС‰РёРјРё РґР°РЅРЅС‹РјРё РёР· РјРѕРґР°Р»РєРё
-                                dayData = { ...data.dayData, ...dayData };
-                            }
-                        }
-                    } catch (error) {
-                        console.log('No saved data for today');
-                    }
+                const savedDayData = getDayFromStorage(today);
+                
+                if (savedDayData) {
+                    dayData = { ...savedDayData, ...dayData };
                 }
 
-                // Р Р°СЃСЃС‡РёС‚С‹РІР°РµРј Health Score
                 return calculateHealthScore(dayData);
-
             } catch (error) {
                 console.error('Error calculating Health Score:', error);
                 return null;
             }
         }
 
-        // Р’СЃРїРѕРјРѕРіР°С‚РµР»СЊРЅС‹Рµ С„СѓРЅРєС†РёРё РґР»СЏ СЂР°Р±РѕС‚С‹ СЃ РєРЅРѕРїРєР°РјРё (РёР· СЃС‚Р°СЂРѕРіРѕ РєРѕРґР°)
         function getSelectedValue(buttonGroup) {
             const selectedButton = buttonGroup?.querySelector('.notion-button.selected');
             return selectedButton ? selectedButton.dataset.value : null;
@@ -1547,213 +1349,13 @@
             return Array.from(selectedButtons).map(btn => btn.dataset.value);
         }
 
-        // РћР±РЅРѕРІР»СЏРµРј Health Score РїСЂРё РёР·РјРµРЅРµРЅРёРё РґР°РЅРЅС‹С… РІ РјРѕРґР°Р»РєРµ
-        function setupHealthScoreUpdates() {
-            // РЎР»СѓС€Р°С‚РµР»Рё РґР»СЏ РѕР±РЅРѕРІР»РµРЅРёСЏ Health Score РїСЂРё РёР·РјРµРЅРµРЅРёРё РґР°РЅРЅС‹С…
-            const updateScoreElements = [
-                sleepSlider,
-                moodSlider,
-                activitySlider,
-                sleepQualityButtons,
-                waterIntakeButtons,
-                sleepIssuesButtons,
-                dehydrationButtons,
-                moodRelatedButtons,
-                activityIssuesButtons
-            ];
-
-            updateScoreElements.forEach(element => {
-                if (element) {
-                    element.addEventListener('change', async () => {
-                        // РќРµ РѕР±РЅРѕРІР»СЏРµРј РІ СЂРµР°Р»СЊРЅРѕРј РІСЂРµРјРµРЅРё, С‡С‚РѕР±С‹ РЅРµ РЅР°РіСЂСѓР¶Р°С‚СЊ
-                        // РњРѕР¶РЅРѕ РґРѕР±Р°РІРёС‚СЊ debounce РїСЂРё РЅРµРѕР±С…РѕРґРёРјРѕСЃС‚Рё
-                    });
-
-                    element.addEventListener('click', async (e) => {
-                        if (e.target.classList.contains('notion-button')) {
-                            // РќРµ РѕР±РЅРѕРІР»СЏРµРј РІ СЂРµР°Р»СЊРЅРѕРј РІСЂРµРјРµРЅРё
-                        }
-                    });
-                }
-            });
-
-            // РћР±РЅРѕРІР»СЏРµРј Health Score РїСЂРё СЃРѕС…СЂР°РЅРµРЅРёРё РґРЅСЏ
-            const originalSaveDay = saveDayBtn?.onclick;
-            if (saveDayBtn) {
-                saveDayBtn.addEventListener('click', async () => {
-                    // РЎРЅР°С‡Р°Р»Р° СЃРѕС…СЂР°РЅСЏРµРј РґРµРЅСЊ
-                    if (originalSaveDay) {
-                        await originalSaveDay();
-                    }
-
-                    // Р—Р°С‚РµРј РѕР±РЅРѕРІР»СЏРµРј Health Score
-                    setTimeout(() => {
-                        loadHealthScore();
-                    }, 500);
-                });
-            }
-        }
-
-        // РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ Health Score РїСЂРё Р·Р°РіСЂСѓР·РєРµ СЃС‚СЂР°РЅРёС†С‹
-        document.addEventListener('DOMContentLoaded', function () {
-            // Р–РґРµРј РёРЅРёС†РёР°Р»РёР·Р°С†РёРё РґСЂСѓРіРёС… РєРѕРјРїРѕРЅРµРЅС‚РѕРІ
-            setTimeout(() => {
-                loadHealthScore();
-                setupHealthScoreUpdates();
-            }, 1000);
-
-            // РљРЅРѕРїРєР° РґР»СЏ РїРµСЂРµСЃС‡РµС‚Р° Health Score
-            const healthScoreTitle = document.getElementById('health-score-title');
-            if (healthScoreTitle) {
-                healthScoreTitle.addEventListener('dblclick', () => {
-                    loadHealthScore();
-                    showToast('Health Score recalculated');
-                });
-            }
-
-            // РЎРІРѕСЂР°С‡РёРІР°РЅРёРµ/СЂР°Р·РІРѕСЂР°С‡РёРІР°РЅРёРµ РґРµС‚Р°Р»РµР№ Health Score
-            const healthScoreToggle = document.getElementById('health-score-toggle');
-            const healthScoreDetails = document.getElementById('health-score-details');
-
-            if (healthScoreTitle && healthScoreDetails) {
-                const isCollapsed = localStorage.getItem('healthScoreDetailsCollapsed') === 'true';
-                if (isCollapsed) {
-                    healthScoreDetails.classList.add('collapsed');
-                    healthScoreToggle.classList.add('collapsed');
-                }
-
-                healthScoreTitle.addEventListener('click', function () {
-                    const isCollapsed = healthScoreDetails.classList.contains('collapsed');
-                    if (isCollapsed) {
-                        healthScoreDetails.classList.remove('collapsed');
-                        healthScoreToggle.classList.remove('collapsed');
-                        localStorage.setItem('healthScoreDetailsCollapsed', 'false');
-                    } else {
-                        healthScoreDetails.classList.add('collapsed');
-                        healthScoreToggle.classList.add('collapsed');
-                        localStorage.setItem('healthScoreDetailsCollapsed', 'true');
-                    }
-                });
-            }
-        });
-
-        // =================== РћРЎРўРђР’РЁРР™РЎРЇ РљРћР” (Р±РµР· РёР·РјРµРЅРµРЅРёР№) ===================
-
-        (function cleanupOldData() {
-            const token = localStorage.getItem('token');
-            localStorage.clear();
-            if (token) localStorage.setItem('token', token);
-        })();
-
-        function getApiUrl() {
-            const hostname = window.location.hostname;
-            return (hostname === 'localhost' || hostname === '127.0.0.1')
-                ? 'http://localhost:3000/api'
-                : '/api';
-        }
-
-        const API_URL = getApiUrl();
-        let currentUser = null;
-        let userToken = null;
-        let lastNotificationTime = 0;
-        const NOTIFICATION_COOLDOWN = 60000;
-
-        let currentDate = new Date();
-        let currentYear = currentDate.getFullYear();
-        let currentMonth = currentDate.getMonth();
-        let selectedDay = null;
-
-        // DOM СЌР»РµРјРµРЅС‚С‹
-        let currentMonthYear, calendarDays, dayModal, modalDayTitle, closeModal;
-        let sleepSlider, sleepValueDisplay, sleepQualityButtons;
-        let waterIntakeButtons, moodSlider, moodValueDisplay, activitySlider, activityValueDisplay;
-        let dayNotes, saveDayBtn;
-        let sleepIssuesSection, dehydrationSection, moodRelatedSection, activityIssuesSection;
-        let sleepIssuesButtons, dehydrationButtons, moodRelatedButtons, activityIssuesButtons;
-        let prevMonthBtn, nextMonthBtn;
-
-        async function updateStreakDisplay() {
-            const streakFire = document.getElementById('streak-fire');
-            const streakCount = document.getElementById('streak-count');
-
-            if (!userToken) {
-                streakFire.className = 'streak-fire inactive';
-                streakCount.textContent = '0';
-                streakCount.style.display = 'block';
-                return;
-            }
-
-            try {
-                const response = await fetch(`${API_URL}/streak`, {
-                    headers: { 'Authorization': `Bearer ${userToken}` }
-                });
-
-                if (response.ok) {
-                    const streakData = await response.json();
-                    const currentStreak = streakData.currentStreak || 0;
-
-                    streakCount.textContent = currentStreak;
-                    streakCount.style.display = 'block';
-
-                    if (currentStreak > 0) {
-                        streakFire.className = 'streak-fire active';
-                        streakFire.style.animation = 'flame-pulse 0.5s ease-in-out';
-                        setTimeout(() => {
-                            streakFire.style.animation = '';
-                        }, 500);
-                    } else {
-                        streakFire.className = 'streak-fire inactive';
-                    }
-                } else {
-                    throw new Error('Failed to fetch streak');
-                }
-            } catch (error) {
-                console.error('Error updating streak:', error);
-                streakFire.className = 'streak-fire inactive';
-                streakCount.textContent = '0';
-                streakCount.style.display = 'block';
-            }
-        }
-
-        async function initializeUserData() {
-            const token = localStorage.getItem('token');
-            if (token) {
-                try {
-                    const response = await fetch(`${API_URL}/me`, {
-                        headers: { 'Authorization': `Bearer ${token}` }
-                    });
-
-                    if (response.ok) {
-                        const data = await response.json();
-                        currentUser = data.user;
-                        userToken = token;
-                        await updateStreakDisplay();
-                    } else {
-                        localStorage.removeItem('token');
-                        userToken = null;
-                    }
-                } catch (error) {
-                    console.error('Error initializing user:', error);
-                    userToken = null;
-                }
-            } else {
-                userToken = null;
-            }
-        }
-
-        function showToast(message) {
-            const toast = document.createElement('div');
-            toast.className = 'toast';
-            toast.textContent = message;
-            const toastContainer = document.getElementById('toast-container');
-            toastContainer.appendChild(toast);
-            setTimeout(() => toastContainer.removeChild(toast), 2000);
-        }
-
         async function renderCalendar() {
             if (!currentMonthYear) return;
 
-            currentMonthYear.textContent = new Date(currentYear, currentMonth).toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+            currentMonthYear.textContent = new Date(currentYear, currentMonth).toLocaleDateString('en-US', { 
+                month: 'long', 
+                year: 'numeric' 
+            });
             calendarDays.innerHTML = '';
 
             const firstDay = new Date(currentYear, currentMonth, 1).getDay();
@@ -1766,23 +1368,7 @@
                 calendarDays.appendChild(emptyDay);
             }
 
-            let monthData = {};
-            if (userToken) {
-                try {
-                    const response = await fetch(`${API_URL}/calendar?year=${currentYear}&month=${currentMonth}`, {
-                        headers: { 'Authorization': `Bearer ${userToken}` }
-                    });
-
-                    if (response.ok) {
-                        const data = await response.json();
-                        if (data.success && data.calendarData) {
-                            monthData = data.calendarData;
-                        }
-                    }
-                } catch (error) {
-                    console.error('Error loading calendar data:', error);
-                }
-            }
+            const monthData = getDaysFromStorage();
 
             for (let day = 1; day <= daysInMonth; day++) {
                 const dayElement = document.createElement('div');
@@ -1796,18 +1382,8 @@
                 dayNumber.textContent = day;
                 dayElement.appendChild(dayNumber);
 
-                const indicators = document.createElement('div');
-                indicators.className = 'day-indicators';
-
-                const dateKey = day;
-                const dateKeyFormatted = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-
-                let dayData = null;
-                if (monthData[dateKey]) {
-                    dayData = monthData[dateKey];
-                } else if (monthData[dateKeyFormatted]) {
-                    dayData = monthData[dateKeyFormatted];
-                }
+                const dateKey = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                const dayData = monthData[dateKey];
 
                 const hasData = dayData && (
                     dayData.sleepHours !== undefined ||
@@ -1820,12 +1396,10 @@
                     dayElement.classList.add('saved');
                     const savedIndicator = document.createElement('span');
                     savedIndicator.className = 'saved-day-checkmark';
-                    savedIndicator.textContent = '';
+                    savedIndicator.textContent = '✓';
                     savedIndicator.title = 'Day saved';
                     dayElement.appendChild(savedIndicator);
                 }
-
-                dayElement.appendChild(indicators);
 
                 dayElement.addEventListener('click', (e) => {
                     e.stopPropagation();
@@ -1854,12 +1428,12 @@
         }
 
         function checkSleepCondition() {
-            const poorSleepSelected = sleepQualityButtons.querySelector('[data-value="poor-sleep"]').classList.contains('selected');
+            const poorSleepSelected = sleepQualityButtons.querySelector('[data-value="poor-sleep"]')?.classList.contains('selected') || false;
             sleepIssuesSection.style.display = poorSleepSelected ? 'block' : 'none';
         }
 
         function checkWaterCondition() {
-            const tooLittleSelected = waterIntakeButtons.querySelector('[data-value="too-little"]').classList.contains('selected');
+            const tooLittleSelected = waterIntakeButtons.querySelector('[data-value="too-little"]')?.classList.contains('selected') || false;
             dehydrationSection.style.display = tooLittleSelected ? 'block' : 'none';
         }
 
@@ -1883,22 +1457,8 @@
                     year: 'numeric'
                 });
 
-                let dayData = null;
-                if (userToken) {
-                    try {
-                        const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-                        const response = await fetch(`${API_URL}/day?date=${dateStr}`, {
-                            headers: { 'Authorization': `Bearer ${userToken}` }
-                        });
-                        if (response.ok) {
-                            const data = await response.json();
-                            if (data.success) dayData = data.dayData;
-                        }
-                    } catch (error) {
-                        console.error('Error loading day data:', error);
-                        dayData = null;
-                    }
-                }
+                const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                const dayData = getDayFromStorage(dateStr);
 
                 sleepSlider.value = dayData ? dayData.sleepHours || 7 : 7;
                 sleepValueDisplay.textContent = parseFloat(sleepSlider.value).toFixed(1) + ' hrs';
@@ -1959,12 +1519,52 @@
             }
         }
 
+        // Функция для создания уведомления на основе данных дня
+        function createNotificationForDay(dayData, date) {
+            try {
+                // Проверяем, нужно ли создавать уведомление
+                const hasNegativeFactors = 
+                    dayData.sleepQuality === 'poor-sleep' ||
+                    (dayData.sleepIssues && dayData.sleepIssues.length > 0) ||
+                    dayData.waterIntake === 'too-little' ||
+                    (dayData.dehydrationSymptoms && dayData.dehydrationSymptoms.length > 0) ||
+                    (dayData.mood && dayData.mood <= 4) ||
+                    (dayData.moodRelated && dayData.moodRelated.length > 0) ||
+                    (dayData.activityLevel && (dayData.activityLevel <= 3 || dayData.activityLevel >= 8)) ||
+                    (dayData.activityIssues && dayData.activityIssues.length > 0);
+                
+                if (!hasNegativeFactors) {
+                    return false; // Нет негативных факторов, уведомление не нужно
+                }
+                
+                // Используем функцию из inbox.html если она доступна
+                if (window.createNotificationFromDayData) {
+                    return window.createNotificationFromDayData(dayData, date);
+                }
+                
+                // Или создаем простое уведомление
+                const notification = {
+                    id: Date.now(),
+                    type: 'symptom_recommendations',
+                    message: `Daily Recommendations for ${date}\nSome health improvements needed based on your tracking data.`,
+                    sent_at: new Date().toISOString(),
+                    read: false
+                };
+                
+                // Сохраняем в localStorage
+                const currentNotifications = JSON.parse(localStorage.getItem('health_tracker_notifications') || '[]');
+                currentNotifications.unshift(notification);
+                localStorage.setItem('health_tracker_notifications', JSON.stringify(currentNotifications));
+                
+                return true;
+            } catch (error) {
+                console.error('Error creating notification:', error);
+                return false;
+            }
+        }
+
         async function saveDayData() {
             if (!selectedDay) return;
-            if (!userToken) {
-                showToast('Please login to save data');
-                return;
-            }
 
             const dayData = {
                 sleepHours: parseFloat(sleepSlider.value),
@@ -1986,56 +1586,43 @@
             try {
                 const dateStr = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(selectedDay).padStart(2, '0')}`;
 
-                const saveResponse = await fetch(`${API_URL}/day`, {
-                    method: 'POST',
-                    headers: {
-                        'Authorization': `Bearer ${userToken}`,
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ date: dateStr, data: dayData })
-                });
+                // Сохраняем день
+                if (saveDayToStorage(dateStr, dayData)) {
+                    // Обновляем streak
+                    const streakResult = updateStreakInStorage(dateStr);
+                    
+                    // Создаем уведомление при необходимости
+                    createNotificationForDay(dayData, dateStr);
 
-                if (!saveResponse.ok) {
-                    const errorText = await saveResponse.text();
-                    throw new Error(`Failed to save day data: ${errorText}`);
-                }
+                    dayModal.style.display = 'none';
+                    document.body.style.overflow = '';
 
-                const streakResponse = await fetch(`${API_URL}/streak/update`, {
-                    method: 'POST',
-                    headers: {
-                        'Authorization': `Bearer ${userToken}`,
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ date: dateStr })
-                });
+                    await renderCalendar();
+                    await updateStreakDisplay();
+                    await loadHealthScore();
 
-                let streakMessage = '';
-                if (streakResponse.ok) {
-                    const streakResult = await streakResponse.json();
+                    let streakMessage = '';
                     if (streakResult.streakIncremented) {
                         streakMessage = `Streak: ${streakResult.currentStreak} days!`;
                     }
-                }
 
-                dayModal.style.display = 'none';
-                document.body.style.overflow = '';
-
-                await renderCalendar();
-                await updateStreakDisplay();
-
-                if (streakMessage) {
-                    showToast(streakMessage);
+                    if (streakMessage) {
+                        showToast(streakMessage);
+                    } else {
+                        showToast('Day saved successfully!');
+                    }
                 } else {
-                    showToast('Day saved successfully!');
+                    throw new Error('Failed to save day data');
                 }
-
             } catch (error) {
                 console.error('Error saving day:', error);
                 showToast('Error: ' + error.message);
             }
         }
 
+        // =================== ИНИЦИАЛИЗАЦИЯ ===================
         document.addEventListener('DOMContentLoaded', function () {
+            // Получаем DOM элементы
             currentMonthYear = document.getElementById('current-month-year');
             calendarDays = document.getElementById('calendar-days');
             dayModal = document.getElementById('day-modal');
@@ -2067,10 +1654,12 @@
             prevMonthBtn = document.getElementById('prev-month');
             nextMonthBtn = document.getElementById('next-month');
 
-            initializeUserData().then(() => {
-                renderCalendar();
-            });
+            // Инициализация
+            updateStreakDisplay();
+            renderCalendar();
+            loadHealthScore();
 
+            // Настройка событий
             closeModal.addEventListener('click', () => {
                 dayModal.style.display = 'none';
                 document.body.style.overflow = '';
@@ -2101,7 +1690,11 @@
             });
 
             [sleepIssuesButtons, dehydrationButtons, moodRelatedButtons, activityIssuesButtons]
-                .forEach(group => group.addEventListener('click', (e) => handleButtonClick(e, true)));
+                .forEach(group => {
+                    if (group) {
+                        group.addEventListener('click', (e) => handleButtonClick(e, true));
+                    }
+                });
 
             saveDayBtn.addEventListener('click', async () => {
                 await saveDayData();
@@ -2131,8 +1724,41 @@
                 }
                 renderCalendar();
             });
+
+            // Health Score события
+            const healthScoreTitle = document.getElementById('health-score-title');
+            const healthScoreToggle = document.getElementById('health-score-toggle');
+            const healthScoreDetails = document.getElementById('health-score-details');
+
+            if (healthScoreTitle && healthScoreDetails) {
+                const isCollapsed = localStorage.getItem('healthScoreDetailsCollapsed') === 'true';
+                if (isCollapsed) {
+                    healthScoreDetails.classList.add('collapsed');
+                    healthScoreToggle.classList.add('collapsed');
+                }
+
+                healthScoreTitle.addEventListener('click', function () {
+                    const isCollapsed = healthScoreDetails.classList.contains('collapsed');
+                    if (isCollapsed) {
+                        healthScoreDetails.classList.remove('collapsed');
+                        healthScoreToggle.classList.remove('collapsed');
+                        localStorage.setItem('healthScoreDetailsCollapsed', 'false');
+                    } else {
+                        healthScoreDetails.classList.add('collapsed');
+                        healthScoreToggle.classList.add('collapsed');
+                        localStorage.setItem('healthScoreDetailsCollapsed', 'true');
+                    }
+                });
+            }
+
+            // Двойной клик для пересчета Health Score
+            if (healthScoreTitle) {
+                healthScoreTitle.addEventListener('dblclick', () => {
+                    loadHealthScore();
+                    showToast('Health Score recalculated');
+                });
+            }
         });
     </script>
 </body>
 </html>
-
