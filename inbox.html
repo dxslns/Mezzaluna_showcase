@@ -990,6 +990,31 @@
             const allSymptoms = [];
             let currentRecommendation = null;
 
+            function parseNotificationMessage(message) {
+    console.log('Raw message to parse:', message);
+    
+    // Если сообщение слишком короткое или не содержит рекомендаций
+    if (!message || message.trim() === '' || 
+        message.includes('No specific recommendations') ||
+        (!message.includes('1.') && !message.includes('recommendations', 'Recommendations'))) {
+        
+        // Создаем базовые рекомендации на основе симптомов
+        const date = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+        return {
+            date: date,
+            recommendations: [{
+                title: 'Health Tracking',
+                description: 'Continue monitoring your symptoms for personalized recommendations.',
+                symptoms: []
+            }],
+            symptomCount: 1,
+            allSymptoms: ['tracking']
+        };
+    }
+    
+    // ... остальной код парсинга ...
+}
+            
             for (let i = 0; i < lines.length; i++) {
                 const line = lines[i].trim();
                 if (!line) continue;
@@ -1418,3 +1443,4 @@
     </script>
 </body>
 </html>
+
