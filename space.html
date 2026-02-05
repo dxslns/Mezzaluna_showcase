@@ -1176,92 +1176,242 @@ function createNotificationForDay(dayData, date) {
         
         // Собираем все симптомы
         const allSymptoms = [];
+        const recommendations = [];
         
+        // Обрабатываем симптомы сна
         if (dayData.sleepQuality === 'poor-sleep') allSymptoms.push('poor-sleep');
         if (dayData.sleepIssues && dayData.sleepIssues.length > 0) {
-            allSymptoms.push(...dayData.sleepIssues);
+            // Для каждого симптома сна создаем отдельную рекомендацию
+            dayData.sleepIssues.forEach(symptom => {
+                allSymptoms.push(symptom);
+                
+                // Создаем рекомендацию для конкретного симптома сна
+                const sleepRecommendations = {
+                    'insomnia': {
+                        title: 'Insomnia Management',
+                        description: 'For insomnia, establish a consistent bedtime routine and avoid screens 1 hour before sleep.',
+                        symptoms: ['insomnia']
+                    },
+                    'early-wakeup': {
+                        title: 'Early Wakeup Solutions',
+                        description: 'For early awakenings, try going to bed later or using blackout curtains.',
+                        symptoms: ['early-wakeup']
+                    },
+                    'fragmented-sleep': {
+                        title: 'Sleep Continuity',
+                        description: 'Avoid fluids before bed and reduce noise disruptions for better sleep continuity.',
+                        symptoms: ['fragmented-sleep']
+                    },
+                    'difficulty-falling-asleep': {
+                        title: 'Sleep Onset Improvement',
+                        description: 'Practice relaxation techniques and create a calming pre-sleep routine.',
+                        symptoms: ['difficulty-falling-asleep']
+                    },
+                    'non-restorative-sleep': {
+                        title: 'Restorative Sleep',
+                        description: 'Ensure your sleep environment is comfortable and free from disruptions.',
+                        symptoms: ['non-restorative-sleep']
+                    },
+                    'daytime-sleepiness': {
+                        title: 'Daytime Alertness',
+                        description: 'Maintain consistent sleep schedule and avoid caffeine in the afternoon.',
+                        symptoms: ['daytime-sleepiness']
+                    },
+                    'poor-sleep': {
+                        title: 'Sleep Quality Improvement',
+                        description: 'Improve sleep quality with a dark, quiet room and comfortable temperature.',
+                        symptoms: ['poor-sleep']
+                    }
+                };
+                
+                if (sleepRecommendations[symptom]) {
+                    recommendations.push(sleepRecommendations[symptom]);
+                }
+            });
         }
         
+        // Если был выбран "poor-sleep" но нет конкретных симптомов
+        if (dayData.sleepQuality === 'poor-sleep' && 
+            (!dayData.sleepIssues || dayData.sleepIssues.length === 0)) {
+            allSymptoms.push('poor-sleep');
+            recommendations.push({
+                title: 'Sleep Quality Improvement',
+                description: 'Improve sleep quality with a dark, quiet room and comfortable temperature.',
+                symptoms: ['poor-sleep']
+            });
+        }
+        
+        // Обрабатываем симптомы обезвоживания
         if (dayData.waterIntake === 'too-little') allSymptoms.push('dehydration');
         if (dayData.dehydrationSymptoms && dayData.dehydrationSymptoms.length > 0) {
-            allSymptoms.push(...dayData.dehydrationSymptoms);
+            dayData.dehydrationSymptoms.forEach(symptom => {
+                allSymptoms.push(symptom);
+                
+                const dehydrationRecommendations = {
+                    'headache': {
+                        title: 'Headache Relief',
+                        description: 'Stay hydrated, reduce screen time, and practice relaxation techniques.',
+                        symptoms: ['headache']
+                    },
+                    'fatigue': {
+                        title: 'Energy Management',
+                        description: 'Ensure adequate sleep, balanced nutrition, and regular light exercise.',
+                        symptoms: ['fatigue']
+                    },
+                    'dry-skin-mucous': {
+                        title: 'Skin & Mucous Hydration',
+                        description: 'Increase water intake and use moisturizers for dry skin.',
+                        symptoms: ['dry-skin-mucous']
+                    },
+                    'poor-concentration': {
+                        title: 'Focus Improvement',
+                        description: 'Stay hydrated and take regular breaks during work.',
+                        symptoms: ['poor-concentration']
+                    }
+                };
+                
+                if (dehydrationRecommendations[symptom]) {
+                    recommendations.push(dehydrationRecommendations[symptom]);
+                }
+            });
         }
         
+        // Если было выбрано "too-little" но нет конкретных симптомов
+        if (dayData.waterIntake === 'too-little' && 
+            (!dayData.dehydrationSymptoms || dayData.dehydrationSymptoms.length === 0)) {
+            allSymptoms.push('dehydration');
+            recommendations.push({
+                title: 'Hydration',
+                description: 'Drink at least 2 liters of water daily. Use reminders to stay hydrated.',
+                symptoms: ['dehydration']
+            });
+        }
+        
+        // Обрабатываем симптомы настроения
         if (dayData.mood && dayData.mood <= 4) allSymptoms.push('low-mood');
         if (dayData.moodRelated && dayData.moodRelated.length > 0) {
-            allSymptoms.push(...dayData.moodRelated);
+            dayData.moodRelated.forEach(symptom => {
+                allSymptoms.push(symptom);
+                
+                const moodRecommendations = {
+                    'stress': {
+                        title: 'Stress Management',
+                        description: 'Practice mindfulness, deep breathing, or take short breaks.',
+                        symptoms: ['stress']
+                    },
+                    'anxiety': {
+                        title: 'Anxiety Relief',
+                        description: 'Grounding techniques and focused breathing can help manage anxiety.',
+                        symptoms: ['anxiety']
+                    },
+                    'apathy': {
+                        title: 'Motivation Boost',
+                        description: 'Set small achievable goals and engage in enjoyable activities.',
+                        symptoms: ['apathy']
+                    },
+                    'depressive-episode': {
+                        title: 'Mood Support',
+                        description: 'Reach out to supportive people and consider professional help.',
+                        symptoms: ['depressive-episode']
+                    },
+                    'irritability': {
+                        title: 'Emotional Regulation',
+                        description: 'Practice deep breathing and identify triggers for irritability.',
+                        symptoms: ['irritability']
+                    },
+                    'social-isolation': {
+                        title: 'Social Connection',
+                        description: 'Maintain social connections and engage in community activities.',
+                        symptoms: ['social-isolation']
+                    },
+                    'mood-swings': {
+                        title: 'Emotional Stability',
+                        description: 'Track mood patterns and practice emotional regulation techniques.',
+                        symptoms: ['mood-swings']
+                    }
+                };
+                
+                if (moodRecommendations[symptom]) {
+                    recommendations.push(moodRecommendations[symptom]);
+                }
+            });
         }
         
+        // Если было низкое настроение но нет конкретных симптомов
+        if (dayData.mood && dayData.mood <= 4 && 
+            (!dayData.moodRelated || dayData.moodRelated.length === 0)) {
+            allSymptoms.push('low-mood');
+            recommendations.push({
+                title: 'Mood Management',
+                description: 'Practice mindfulness and maintain social connections for better emotional wellbeing.',
+                symptoms: ['low-mood']
+            });
+        }
+        
+        // Обрабатываем симптомы активности
         if (dayData.activityLevel && (dayData.activityLevel <= 3 || dayData.activityLevel >= 8)) {
             allSymptoms.push(dayData.activityLevel <= 3 ? 'low-activity' : 'high-activity');
         }
+        
         if (dayData.activityIssues && dayData.activityIssues.length > 0) {
-            allSymptoms.push(...dayData.activityIssues);
+            dayData.activityIssues.forEach(symptom => {
+                allSymptoms.push(symptom);
+                
+                const activityRecommendations = {
+                    'sedentary-day': {
+                        title: 'Physical Activity',
+                        description: 'Incorporate light movement throughout the day.',
+                        symptoms: ['sedentary-day']
+                    },
+                    'overtraining': {
+                        title: 'Recovery & Rest',
+                        description: 'Balance exercise with adequate rest and recovery time.',
+                        symptoms: ['overtraining']
+                    },
+                    'bad-mood': {
+                        title: 'Activity & Mood',
+                        description: 'Light exercise can improve mood and energy levels.',
+                        symptoms: ['bad-mood']
+                    },
+                    'reduced-metabolism': {
+                        title: 'Metabolic Health',
+                        description: 'Regular physical activity supports healthy metabolism.',
+                        symptoms: ['reduced-metabolism']
+                    },
+                    'muscle-weakness': {
+                        title: 'Strength Training',
+                        description: 'Incorporate light strength exercises for muscle health.',
+                        symptoms: ['muscle-weakness']
+                    },
+                    'increased-stress': {
+                        title: 'Stress & Activity Balance',
+                        description: 'Moderate exercise can help manage stress levels.',
+                        symptoms: ['increased-stress']
+                    },
+                    'chronic-fatigue': {
+                        title: 'Energy Management',
+                        description: 'Balance activity with rest for chronic fatigue.',
+                        symptoms: ['chronic-fatigue']
+                    }
+                };
+                
+                if (activityRecommendations[symptom]) {
+                    recommendations.push(activityRecommendations[symptom]);
+                }
+            });
+        }
+        
+        // Если была низкая/высокая активность но нет конкретных симптомов
+        if (dayData.activityLevel && (dayData.activityLevel <= 3 || dayData.activityLevel >= 8) &&
+            (!dayData.activityIssues || dayData.activityIssues.length === 0)) {
+            recommendations.push({
+                title: 'Activity Balance',
+                description: 'Aim for moderate daily activity (30-60 minutes).',
+                symptoms: [dayData.activityLevel <= 3 ? 'low-activity' : 'high-activity']
+            });
         }
         
         console.log('Collected symptoms:', allSymptoms);
-        
-        // Создаем рекомендации на основе симптомов
-        const recommendations = [];
-        
-        // Для сна
-        if (dayData.sleepQuality === 'poor-sleep' || 
-            (dayData.sleepIssues && dayData.sleepIssues.length > 0)) {
-            
-            const sleepSymptoms = ['poor-sleep'];
-            if (dayData.sleepIssues) sleepSymptoms.push(...dayData.sleepIssues);
-            
-            recommendations.push({
-                title: 'Sleep Improvement',
-                description: 'Establish a consistent bedtime routine, avoid screens before sleep, and create a comfortable sleep environment.',
-                symptoms: sleepSymptoms
-            });
-        }
-        
-        // Для воды
-        if (dayData.waterIntake === 'too-little' || 
-            (dayData.dehydrationSymptoms && dayData.dehydrationSymptoms.length > 0)) {
-            
-            const waterSymptoms = ['dehydration'];
-            if (dayData.dehydrationSymptoms) waterSymptoms.push(...dayData.dehydrationSymptoms);
-            
-            recommendations.push({
-                title: 'Hydration',
-                description: 'Drink at least 2 liters of water daily. Use reminders or a water tracking app to stay hydrated.',
-                symptoms: waterSymptoms
-            });
-        }
-        
-        // Для настроения
-        if ((dayData.mood && dayData.mood <= 4) || 
-            (dayData.moodRelated && dayData.moodRelated.length > 0)) {
-            
-            const moodSymptoms = ['low-mood'];
-            if (dayData.moodRelated) moodSymptoms.push(...dayData.moodRelated);
-            
-            recommendations.push({
-                title: 'Mood Management',
-                description: 'Practice mindfulness, engage in physical activity, and maintain social connections for better emotional wellbeing.',
-                symptoms: moodSymptoms
-            });
-        }
-        
-        // Для активности
-        if ((dayData.activityLevel && (dayData.activityLevel <= 3 || dayData.activityLevel >= 8)) || 
-            (dayData.activityIssues && dayData.activityIssues.length > 0)) {
-            
-            const activitySymptoms = [];
-            if (dayData.activityLevel <= 3) activitySymptoms.push('low-activity');
-            if (dayData.activityLevel >= 8) activitySymptoms.push('high-activity');
-            if (dayData.activityIssues) activitySymptoms.push(...dayData.activityIssues);
-            
-            recommendations.push({
-                title: 'Activity Balance',
-                description: 'Aim for moderate daily activity (30-60 minutes). Balance exercise with adequate rest and recovery.',
-                symptoms: activitySymptoms
-            });
-        }
-        
         console.log('Created recommendations:', recommendations);
         
         // Создаем сообщение уведомления
@@ -1291,7 +1441,7 @@ function createNotificationForDay(dayData, date) {
             read: false
         };
         
-        console.log('Notification object:', notification);
+        console.log('Notification message:', notification.message);
         
         // Сохраняем в localStorage
         const currentNotifications = JSON.parse(localStorage.getItem('health_tracker_notifications') || '[]');
@@ -2062,5 +2212,6 @@ document.addEventListener('DOMContentLoaded', function () {
     
 </body>
 </html>
+
 
 
