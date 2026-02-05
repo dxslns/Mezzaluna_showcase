@@ -617,7 +617,7 @@
         const NOTIFICATIONS_STORAGE_KEY = 'health_tracker_notifications';
         const LAST_NOTIFICATION_ID_KEY = 'last_notification_id';
 
-        // Маппинг симптомов на страницы (оставляем как было)
+        // Маппинг симптомов на страницы
         const SYMPTOM_MAPPING = {
             'insomnia': 'insomnia.html',
             'poor-sleep': 'insomnia.html',
@@ -765,8 +765,6 @@
             }
         }
 
-        // Остальные функции остаются почти без изменений, только убираем обращения к API
-
         // Рендер уведомлений
         function renderNotifications(notifications) {
             console.log('?? Rendering', notifications.length, 'notifications');
@@ -784,7 +782,7 @@
             console.log('? Notifications rendered successfully');
         }
 
-        // Создание элемента уведомления (остается без изменений)
+        // Создание элемента уведомления
         function createNotificationElement(notification) {
             const div = document.createElement('div');
             div.className = 'notification';
@@ -884,7 +882,7 @@
             return div;
         }
 
-        // Вспомогательные функции (остаются без изменений)
+        // Вспомогательные функции
         function groupSymptomsByPage(symptoms) {
             const groups = {};
             symptoms.forEach(symptom => {
@@ -978,9 +976,130 @@
                 .replace(/\b\w/g, l => l.toUpperCase());
         }
 
-        // Парсинг сообщения (остается без изменений)
+        // Парсинг сообщения (ИСПРАВЛЕННАЯ ВЕРСИЯ)
         function parseNotificationMessage(message) {
             console.log('Raw message to parse:', message);
+            
+            // Если сообщение слишком короткое или не содержит рекомендаций
+            if (!message || message.trim() === '' || 
+                message.includes('No specific recommendations') ||
+                message.toLowerCase().includes('no specific') ||
+                (!message.includes('1.') && !message.toLowerCase().includes('recommendation'))) {
+                
+                console.log('Creating fallback recommendations for empty message');
+                
+                // Попробуем извлечь симптомы из сообщения, даже если оно пустое
+                const dateMatch = message.match(/(?:for|:)\s*([^\n]+)/);
+                const date = dateMatch ? dateMatch[1].trim() : new Date().toLocaleDateString('en-US', { 
+                    month: 'short', 
+                    day: 'numeric' 
+                });
+                
+                // Попробуем найти симптомы в сообщении
+                let symptoms = [];
+                const symptomKeywords = [
+                    'insomnia', 'poor-sleep', 'early-wakeup', 'fragmented-sleep',
+                    'headache', 'fatigue', 'stress', 'anxiety', 'apathy',
+                    'depressive', 'irritability', 'isolation', 'mood-swings',
+                    'sedentary', 'overtraining', 'bad-mood', 'reduced-metabolism',
+                    'muscle-weakness', 'increased-stress', 'chronic-fatigue'
+                ];
+                
+                symptomKeywords.forEach(keyword => {
+                    if (message.toLowerCase().includes(keyword)) {
+                        symptoms.push(keyword);
+                    }
+                });
+                
+                // Если нашли симптомы, создаем рекомендации
+                if (symptoms.length > 0) {
+                    const recommendations = symptoms.map(symptom => {
+                        const recommendationMap = {
+                            'insomnia': {
+                                title: 'Sleep Improvement',
+                                description: 'For insomnia, establish a consistent bedtime routine and avoid screens 1 hour before sleep.',
+                                symptoms: ['insomnia']
+                            },
+                            'poor-sleep': {
+                                title: 'Sleep Quality',
+                                description: 'Improve sleep quality with a dark, quiet room and comfortable temperature.',
+                                symptoms: ['poor-sleep']
+                            },
+                            'early-wakeup': {
+                                title: 'Sleep Schedule',
+                                description: 'For early awakenings, try going to bed later or using blackout curtains.',
+                                symptoms: ['early-wakeup']
+                            },
+                            'fragmented-sleep': {
+                                title: 'Sleep Continuity',
+                                description: 'Avoid fluids before bed and reduce noise disruptions for better sleep continuity.',
+                                symptoms: ['fragmented-sleep']
+                            },
+                            'headache': {
+                                title: 'Headache Relief',
+                                description: 'Stay hydrated, reduce screen time, and practice relaxation techniques.',
+                                symptoms: ['headache']
+                            },
+                            'fatigue': {
+                                title: 'Energy Management',
+                                description: 'Ensure adequate sleep, balanced nutrition, and regular light exercise.',
+                                symptoms: ['fatigue']
+                            },
+                            'stress': {
+                                title: 'Stress Management',
+                                description: 'Practice mindfulness, deep breathing, or take short breaks throughout the day.',
+                                symptoms: ['stress']
+                            },
+                            'anxiety': {
+                                title: 'Anxiety Relief',
+                                description: 'Grounding techniques and focused breathing can help manage anxiety symptoms.',
+                                symptoms: ['anxiety']
+                            },
+                            'apathy': {
+                                title: 'Motivation Boost',
+                                description: 'Set small achievable goals and engage in activities you used to enjoy.',
+                                symptoms: ['apathy']
+                            },
+                            'depressive-episode': {
+                                title: 'Mood Support',
+                                description: 'Reach out to supportive people and consider speaking with a healthcare professional.',
+                                symptoms: ['depressive-episode']
+                            },
+                            'irritability': {
+                                title: 'Emotional Regulation',
+                                description: 'Practice deep breathing and identify triggers for irritability.',
+                                symptoms: ['irritability']
+                            }
+                        };
+                        
+                        return recommendationMap[symptom] || {
+                            title: `${symptom.replace(/-/g, ' ').split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')}`,
+                            description: `Track your ${symptom.replace(/-/g, ' ')} symptoms regularly for better health insights.`,
+                            symptoms: [symptom]
+                        };
+                    });
+                    
+                    return {
+                        date: date,
+                        recommendations: recommendations,
+                        symptomCount: symptoms.length,
+                        allSymptoms: symptoms
+                    };
+                }
+                
+                // Если нет симптомов, создаем общую рекомендацию
+                return {
+                    date: date,
+                    recommendations: [{
+                        title: 'Health Tracking',
+                        description: 'Continue monitoring your symptoms for personalized recommendations.',
+                        symptoms: []
+                    }],
+                    symptomCount: 1,
+                    allSymptoms: ['health-tracking']
+                };
+            }
+            
             const lines = message.split('\n');
             console.log('Lines:', lines);
 
@@ -990,279 +1109,147 @@
             const allSymptoms = [];
             let currentRecommendation = null;
 
-            function parseNotificationMessage(message) {
-    console.log('Raw message to parse:', message);
-    
-    // Если сообщение слишком короткое или не содержит рекомендаций
-    if (!message || message.trim() === '' || 
-        message.includes('No specific recommendations') ||
-        message.toLowerCase().includes('no specific') ||
-        (!message.includes('1.') && !message.toLowerCase().includes('recommendation'))) {
-        
-        console.log('Creating fallback recommendations for empty message');
-        
-        // Попробуем извлечь симптомы из сообщения, даже если оно пустое
-        const dateMatch = message.match(/(?:for|:)\s*([^\n]+)/);
-        const date = dateMatch ? dateMatch[1].trim() : new Date().toLocaleDateString('en-US', { 
-            month: 'short', 
-            day: 'numeric' 
-        });
-        
-        // Попробуем найти симптомы в сообщении
-        let symptoms = [];
-        const symptomKeywords = [
-            'insomnia', 'poor-sleep', 'early-wakeup', 'fragmented-sleep',
-            'headache', 'fatigue', 'stress', 'anxiety', 'apathy',
-            'depressive', 'irritability', 'isolation', 'mood-swings',
-            'sedentary', 'overtraining', 'bad-mood', 'reduced-metabolism',
-            'muscle-weakness', 'increased-stress', 'chronic-fatigue'
-        ];
-        
-        symptomKeywords.forEach(keyword => {
-            if (message.toLowerCase().includes(keyword)) {
-                symptoms.push(keyword);
-            }
-        });
-        
-        // Если нашли симптомы, создаем рекомендации
-        if (symptoms.length > 0) {
-            const recommendations = symptoms.map(symptom => {
-                const recommendationMap = {
-                    'insomnia': {
-                        title: 'Sleep Improvement',
-                        description: 'For insomnia, establish a consistent bedtime routine and avoid screens 1 hour before sleep.',
-                        symptoms: ['insomnia']
-                    },
-                    'poor-sleep': {
-                        title: 'Sleep Quality',
-                        description: 'Improve sleep quality with a dark, quiet room and comfortable temperature.',
-                        symptoms: ['poor-sleep']
-                    },
-                    'early-wakeup': {
-                        title: 'Sleep Schedule',
-                        description: 'For early awakenings, try going to bed later or using blackout curtains.',
-                        symptoms: ['early-wakeup']
-                    },
-                    'fragmented-sleep': {
-                        title: 'Sleep Continuity',
-                        description: 'Avoid fluids before bed and reduce noise disruptions for better sleep continuity.',
-                        symptoms: ['fragmented-sleep']
-                    },
-                    'headache': {
-                        title: 'Headache Relief',
-                        description: 'Stay hydrated, reduce screen time, and practice relaxation techniques.',
-                        symptoms: ['headache']
-                    },
-                    'fatigue': {
-                        title: 'Energy Management',
-                        description: 'Ensure adequate sleep, balanced nutrition, and regular light exercise.',
-                        symptoms: ['fatigue']
-                    },
-                    'stress': {
-                        title: 'Stress Management',
-                        description: 'Practice mindfulness, deep breathing, or take short breaks throughout the day.',
-                        symptoms: ['stress']
-                    },
-                    'anxiety': {
-                        title: 'Anxiety Relief',
-                        description: 'Grounding techniques and focused breathing can help manage anxiety symptoms.',
-                        symptoms: ['anxiety']
-                    },
-                    'apathy': {
-                        title: 'Motivation Boost',
-                        description: 'Set small achievable goals and engage in activities you used to enjoy.',
-                        symptoms: ['apathy']
-                    },
-                    'depressive-episode': {
-                        title: 'Mood Support',
-                        description: 'Reach out to supportive people and consider speaking with a healthcare professional.',
-                        symptoms: ['depressive-episode']
-                    },
-                    'irritability': {
-                        title: 'Emotional Regulation',
-                        description: 'Practice deep breathing and identify triggers for irritability.',
-                        symptoms: ['irritability']
+            for (let i = 0; i < lines.length; i++) {
+                const line = lines[i].trim();
+
+                if (!line) continue;
+
+                // Парсинг даты
+                if (line.includes('Daily Recommendations for')) {
+                    const dateMatch = line.match(/Daily Recommendations for (.+)/);
+                    if (dateMatch) {
+                        date = dateMatch[1].trim();
+                        console.log('Found date in Daily Recommendations:', date);
                     }
-                };
-                
-                return recommendationMap[symptom] || {
-                    title: `${symptom.replace(/-/g, ' ').split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')}`,
-                    description: `Track your ${symptom.replace(/-/g, ' ')} symptoms regularly for better health insights.`,
-                    symptoms: [symptom]
-                };
-            });
-            
-            return {
-                date: date,
-                recommendations: recommendations,
-                symptomCount: symptoms.length,
-                allSymptoms: symptoms
-            };
-        }
-        
-        // Если нет симптомов, создаем общую рекомендацию
-        return {
-            date: date,
-            recommendations: [{
-                title: 'Health Tracking',
-                description: 'Continue monitoring your symptoms for personalized recommendations.',
-                symptoms: []
-            }],
-            symptomCount: 1,
-            allSymptoms: ['health-tracking']
-        };
-    }
-    
-    const lines = message.split('\n');
-    console.log('Lines:', lines);
+                } else if (line.includes('Date:')) {
+                    date = line.replace('Date:', '').trim();
+                    console.log('Found date:', date);
+                } else if (line.includes('📋 Daily Recommendations')) {
+                    const dateMatch = line.match(/📋 Daily Recommendations - (.+)/);
+                    if (dateMatch) {
+                        date = dateMatch[1].trim();
+                        console.log('Found date with emoji:', date);
+                    }
+                }
 
-    let date = '';
-    let symptomCount = 0;
-    const recommendations = [];
-    const allSymptoms = [];
-    let currentRecommendation = null;
+                // Парсинг количества симптомов
+                if (line.includes('Total symptoms tracked:')) {
+                    const match = line.match(/Total symptoms tracked: (\d+)/);
+                    if (match) {
+                        symptomCount = parseInt(match[1]);
+                        console.log('Found symptom count from tracked:', symptomCount);
+                    }
+                } else if (line.includes('Total symptoms:')) {
+                    const match = line.match(/Total symptoms: (\d+)/);
+                    if (match) {
+                        symptomCount = parseInt(match[1]);
+                        console.log('Found symptom count:', symptomCount);
+                    }
+                }
 
-    for (let i = 0; i < lines.length; i++) {
-        const line = lines[i].trim();
+                // Парсинг списка симптомов
+                if (line.includes('Symptoms:')) {
+                    const symptomsPart = line.replace('Symptoms:', '').trim();
+                    const symptoms = symptomsPart.split(',').map(s => s.trim()).filter(s => s);
+                    allSymptoms.push(...symptoms);
+                    console.log('Found symptoms:', symptoms);
+                }
 
-        if (!line) continue;
+                // Парсинг рекомендаций с форматом "1. Title: Description"
+                if (line.match(/^\d+\.\s+.+:/)) {
+                    if (currentRecommendation) {
+                        recommendations.push(currentRecommendation);
+                    }
 
-        // Парсинг даты
-        if (line.includes('Daily Recommendations for')) {
-            const dateMatch = line.match(/Daily Recommendations for (.+)/);
-            if (dateMatch) {
-                date = dateMatch[1].trim();
-                console.log('Found date in Daily Recommendations:', date);
-            }
-        } else if (line.includes('Date:')) {
-            date = line.replace('Date:', '').trim();
-            console.log('Found date:', date);
-        } else if (line.includes('📋 Daily Recommendations')) {
-            const dateMatch = line.match(/📋 Daily Recommendations - (.+)/);
-            if (dateMatch) {
-                date = dateMatch[1].trim();
-                console.log('Found date with emoji:', date);
-            }
-        }
+                    const match = line.match(/^\d+\.\s+(.+?):\s*(.+)/);
+                    if (match) {
+                        currentRecommendation = {
+                            title: match[1].trim(),
+                            description: match[2].trim(),
+                            symptoms: []
+                        };
+                        console.log('Found recommendation with colon:', currentRecommendation);
 
-        // Парсинг количества симптомов
-        if (line.includes('Total symptoms tracked:')) {
-            const match = line.match(/Total symptoms tracked: (\d+)/);
-            if (match) {
-                symptomCount = parseInt(match[1]);
-                console.log('Found symptom count from tracked:', symptomCount);
-            }
-        } else if (line.includes('Total symptoms:')) {
-            const match = line.match(/Total symptoms: (\d+)/);
-            if (match) {
-                symptomCount = parseInt(match[1]);
-                console.log('Found symptom count:', symptomCount);
-            }
-        }
+                        const descSymptoms = extractSymptomsFromText(match[2]);
+                        if (descSymptoms.length > 0) {
+                            currentRecommendation.symptoms = descSymptoms;
+                            allSymptoms.push(...descSymptoms);
+                        }
+                    }
+                }
+                // Парсинг рекомендаций с форматом "1. Title" (без двоеточия)
+                else if (line.match(/^\d+\.\s+[^:]+$/)) {
+                    if (currentRecommendation) {
+                        recommendations.push(currentRecommendation);
+                    }
 
-        // Парсинг списка симптомов
-        if (line.includes('Symptoms:')) {
-            const symptomsPart = line.replace('Symptoms:', '').trim();
-            const symptoms = symptomsPart.split(',').map(s => s.trim()).filter(s => s);
-            allSymptoms.push(...symptoms);
-            console.log('Found symptoms:', symptoms);
-        }
+                    const titleMatch = line.match(/^\d+\.\s+(.+)/);
+                    if (titleMatch) {
+                        currentRecommendation = {
+                            title: titleMatch[1].trim(),
+                            description: '',
+                            symptoms: []
+                        };
+                        console.log('Found simple recommendation:', currentRecommendation);
+                    }
+                }
+                // Многострочные описания рекомендаций
+                else if (currentRecommendation && line && !line.match(/^\d+\./) &&
+                    !line.includes('Total symptoms') && !line.includes('Symptoms:')) {
+                    if (!currentRecommendation.description) {
+                        currentRecommendation.description = line.trim();
+                    } else {
+                        currentRecommendation.description += ' ' + line.trim();
+                    }
 
-        // Парсинг рекомендаций с форматом "1. Title: Description"
-        if (line.match(/^\d+\.\s+.+:/)) {
-            if (currentRecommendation) {
-                recommendations.push(currentRecommendation);
-            }
-
-            const match = line.match(/^\d+\.\s+(.+?):\s*(.+)/);
-            if (match) {
-                currentRecommendation = {
-                    title: match[1].trim(),
-                    description: match[2].trim(),
-                    symptoms: []
-                };
-                console.log('Found recommendation with colon:', currentRecommendation);
-
-                const descSymptoms = extractSymptomsFromText(match[2]);
-                if (descSymptoms.length > 0) {
-                    currentRecommendation.symptoms = descSymptoms;
-                    allSymptoms.push(...descSymptoms);
+                    const extraSymptoms = extractSymptomsFromText(line);
+                    if (extraSymptoms.length > 0) {
+                        currentRecommendation.symptoms.push(...extraSymptoms);
+                        allSymptoms.push(...extraSymptoms);
+                    }
                 }
             }
-        }
-        // Парсинг рекомендаций с форматом "1. Title" (без двоеточия)
-        else if (line.match(/^\d+\.\s+[^:]+$/)) {
+
+            // Добавляем последнюю рекомендацию
             if (currentRecommendation) {
                 recommendations.push(currentRecommendation);
             }
 
-            const titleMatch = line.match(/^\d+\.\s+(.+)/);
-            if (titleMatch) {
-                currentRecommendation = {
-                    title: titleMatch[1].trim(),
-                    description: '',
+            // Если не нашли симптомы в описании, пытаемся извлечь из заголовков
+            if (allSymptoms.length === 0) {
+                recommendations.forEach(rec => {
+                    const titleSymptoms = extractSymptomsFromText(rec.title);
+                    if (titleSymptoms.length > 0) {
+                        rec.symptoms = titleSymptoms;
+                        allSymptoms.push(...titleSymptoms);
+                    }
+                });
+            }
+
+            // Убираем дубликаты симптомов
+            const uniqueSymptoms = [...new Set(allSymptoms.map(s => getNormalizedSymptom(s)))].map(s => {
+                const original = allSymptoms.find(os => getNormalizedSymptom(os) === s);
+                return original || s;
+            });
+
+            console.log('Parsed notification result:', {
+                date,
+                symptomCount,
+                recommendationsCount: recommendations.length,
+                allSymptoms: uniqueSymptoms
+            });
+
+            return {
+                date: date || new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
+                recommendations: recommendations.length > 0 ? recommendations : [{
+                    title: 'Health Insights',
+                    description: 'Based on your tracked data, maintain healthy habits.',
                     symptoms: []
-                };
-                console.log('Found simple recommendation:', currentRecommendation);
-            }
+                }],
+                symptomCount: uniqueSymptoms.length > 0 ? uniqueSymptoms.length : 1,
+                allSymptoms: uniqueSymptoms.length > 0 ? uniqueSymptoms : ['general-health']
+            };
         }
-        // Многострочные описания рекомендаций
-        else if (currentRecommendation && line && !line.match(/^\d+\./) &&
-            !line.includes('Total symptoms') && !line.includes('Symptoms:')) {
-            if (!currentRecommendation.description) {
-                currentRecommendation.description = line.trim();
-            } else {
-                currentRecommendation.description += ' ' + line.trim();
-            }
-
-            const extraSymptoms = extractSymptomsFromText(line);
-            if (extraSymptoms.length > 0) {
-                currentRecommendation.symptoms.push(...extraSymptoms);
-                allSymptoms.push(...extraSymptoms);
-            }
-        }
-    }
-
-    // Добавляем последнюю рекомендацию
-    if (currentRecommendation) {
-        recommendations.push(currentRecommendation);
-    }
-
-    // Если не нашли симптомы в описании, пытаемся извлечь из заголовков
-    if (allSymptoms.length === 0) {
-        recommendations.forEach(rec => {
-            const titleSymptoms = extractSymptomsFromText(rec.title);
-            if (titleSymptoms.length > 0) {
-                rec.symptoms = titleSymptoms;
-                allSymptoms.push(...titleSymptoms);
-            }
-        });
-    }
-
-    // Убираем дубликаты симптомов
-    const uniqueSymptoms = [...new Set(allSymptoms.map(s => getNormalizedSymptom(s)))].map(s => {
-        const original = allSymptoms.find(os => getNormalizedSymptom(os) === s);
-        return original || s;
-    });
-
-    console.log('Parsed notification result:', {
-        date,
-        symptomCount,
-        recommendationsCount: recommendations.length,
-        allSymptoms: uniqueSymptoms
-    });
-
-    return {
-        date: date || new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
-        recommendations: recommendations.length > 0 ? recommendations : [{
-            title: 'Health Insights',
-            description: 'Based on your tracked data, maintain healthy habits.',
-            symptoms: []
-        }],
-        symptomCount: uniqueSymptoms.length > 0 ? uniqueSymptoms.length : 1,
-        allSymptoms: uniqueSymptoms.length > 0 ? uniqueSymptoms : ['general-health']
-    };
-}
 
         function extractSymptomsFromText(text) {
             if (!text) return [];
@@ -1592,5 +1579,3 @@
     </script>
 </body>
 </html>
-
-
