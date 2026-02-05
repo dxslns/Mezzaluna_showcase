@@ -1032,938 +1032,1035 @@
 
     <script>
         // =================== КОНФИГУРАЦИЯ LOCALSTORAGE ===================
-        const DAYS_STORAGE_KEY = 'health_tracker_days';
-        const STREAK_STORAGE_KEY = 'health_tracker_streak';
-        const LAST_SAVED_DATE_KEY = 'health_tracker_last_saved_date';
+const DAYS_STORAGE_KEY = 'health_tracker_days';
+const STREAK_STORAGE_KEY = 'health_tracker_streak';
+const LAST_SAVED_DATE_KEY = 'health_tracker_last_saved_date';
 
-        // =================== КОНФИГУРАЦИЯ HEALTH SCORE ===================
-        const HEALTH_SCORE_CONFIG = {
-            sleep: {
-                weight: 40,
-                optimalHours: { min: 7, max: 8 },
-                scores: {
-                    optimal: 100,
-                    good: 80,
-                    fair: 60,
-                    poor: 40,
-                    veryPoor: 20
-                },
-                poorSleepPenalty: 30,
-                symptomPenalty: 10
-            },
-            water: {
-                weight: 20,
-                scores: {
-                    'optimal': 100,
-                    'enough': 80,
-                    'little': 40,
-                    'too-little': 20
-                },
-                symptomPenalty: 15
-            },
-            mood: {
-                weight: 20,
-                scores: {
-                    10: 100, 9: 90, 8: 80, 7: 70, 6: 60, 5: 50,
-                    4: 40, 3: 30, 2: 20, 1: 10
-                },
-                lowMoodPenalty: 25,
-                symptomPenalty: 10
-            },
-            activity: {
-                weight: 20,
-                optimalRange: { min: 5, max: 7 },
-                scores: {
-                    10: 90, 9: 85, 8: 80, 7: 75, 6: 70, 5: 65,
-                    4: 55, 3: 45, 2: 35, 1: 25
-                },
-                lowActivityPenalty: 20,
-                highActivityPenalty: 15,
-                symptomPenalty: 10
+// =================== КОНФИГУРАЦИЯ HEALTH SCORE ===================
+const HEALTH_SCORE_CONFIG = {
+    sleep: {
+        weight: 40,
+        optimalHours: { min: 7, max: 8 },
+        scores: {
+            optimal: 100,
+            good: 80,
+            fair: 60,
+            poor: 40,
+            veryPoor: 20
+        },
+        poorSleepPenalty: 30,
+        symptomPenalty: 10
+    },
+    water: {
+        weight: 20,
+        scores: {
+            'optimal': 100,
+            'enough': 80,
+            'little': 40,
+            'too-little': 20
+        },
+        symptomPenalty: 15
+    },
+    mood: {
+        weight: 20,
+        scores: {
+            10: 100, 9: 90, 8: 80, 7: 70, 6: 60, 5: 50,
+            4: 40, 3: 30, 2: 20, 1: 10
+        },
+        lowMoodPenalty: 25,
+        symptomPenalty: 10
+    },
+    activity: {
+        weight: 20,
+        optimalRange: { min: 5, max: 7 },
+        scores: {
+            10: 90, 9: 85, 8: 80, 7: 75, 6: 70, 5: 65,
+            4: 55, 3: 45, 2: 35, 1: 25
+        },
+        lowActivityPenalty: 20,
+        highActivityPenalty: 15,
+        symptomPenalty: 10
+    }
+};
+
+// =================== ФУНКЦИИ ДЛЯ РАБОТЫ С LOCALSTORAGE ===================
+function getDaysFromStorage() {
+    try {
+        const days = localStorage.getItem(DAYS_STORAGE_KEY);
+        return days ? JSON.parse(days) : {};
+    } catch (error) {
+        console.error('Error reading days from localStorage:', error);
+        return {};
+    }
+}
+
+function saveDayToStorage(date, dayData) {
+    try {
+        const days = getDaysFromStorage();
+        days[date] = {
+            ...dayData,
+            savedAt: new Date().toISOString()
+        };
+        localStorage.setItem(DAYS_STORAGE_KEY, JSON.stringify(days));
+        return true;
+    } catch (error) {
+        console.error('Error saving day to localStorage:', error);
+        return false;
+    }
+}
+
+function getDayFromStorage(date) {
+    const days = getDaysFromStorage();
+    return days[date] || null;
+}
+
+function getStreakFromStorage() {
+    try {
+        const streakData = localStorage.getItem(STREAK_STORAGE_KEY);
+        return streakData ? JSON.parse(streakData) : { currentStreak: 0, lastDate: null };
+    } catch (error) {
+        console.error('Error reading streak from localStorage:', error);
+        return { currentStreak: 0, lastDate: null };
+    }
+}
+
+function updateStreakInStorage(date) {
+    try {
+        const streakData = getStreakFromStorage();
+        const today = new Date(date);
+        const lastDate = streakData.lastDate ? new Date(streakData.lastDate) : null;
+        
+        let currentStreak = streakData.currentStreak;
+        let streakIncremented = false;
+        
+        if (lastDate) {
+            const dayDiff = Math.floor((today - lastDate) / (1000 * 60 * 60 * 24));
+            
+            if (dayDiff === 1) {
+                // Последовательные дни
+                currentStreak++;
+                streakIncremented = true;
+            } else if (dayDiff > 1) {
+                // Пропущены дни
+                currentStreak = 1;
             }
+            // dayDiff === 0: тот же день, не меняем streak
+        } else {
+            // Первая запись
+            currentStreak = 1;
+            streakIncremented = true;
+        }
+        
+        const newStreakData = {
+            currentStreak: currentStreak,
+            lastDate: today.toISOString().split('T')[0]
+        };
+        
+        localStorage.setItem(STREAK_STORAGE_KEY, JSON.stringify(newStreakData));
+        
+        return {
+            success: true,
+            currentStreak: currentStreak,
+            streakIncremented: streakIncremented
+        };
+    } catch (error) {
+        console.error('Error updating streak:', error);
+        return { success: false, currentStreak: 0, streakIncremented: false };
+    }
+}
+
+// =================== ФУНКЦИЯ ДЛЯ СОЗДАНИЯ УВЕДОМЛЕНИЙ ===================
+function createNotificationForDay(dayData, date) {
+    try {
+        console.log('Creating notification for day:', { date, dayData });
+        
+        // Собираем все симптомы
+        const allSymptoms = [];
+        
+        if (dayData.sleepQuality === 'poor-sleep') allSymptoms.push('poor-sleep');
+        if (dayData.sleepIssues && dayData.sleepIssues.length > 0) {
+            allSymptoms.push(...dayData.sleepIssues);
+        }
+        
+        if (dayData.waterIntake === 'too-little') allSymptoms.push('dehydration');
+        if (dayData.dehydrationSymptoms && dayData.dehydrationSymptoms.length > 0) {
+            allSymptoms.push(...dayData.dehydrationSymptoms);
+        }
+        
+        if (dayData.mood && dayData.mood <= 4) allSymptoms.push('low-mood');
+        if (dayData.moodRelated && dayData.moodRelated.length > 0) {
+            allSymptoms.push(...dayData.moodRelated);
+        }
+        
+        if (dayData.activityLevel && (dayData.activityLevel <= 3 || dayData.activityLevel >= 8)) {
+            allSymptoms.push(dayData.activityLevel <= 3 ? 'low-activity' : 'high-activity');
+        }
+        if (dayData.activityIssues && dayData.activityIssues.length > 0) {
+            allSymptoms.push(...dayData.activityIssues);
+        }
+        
+        console.log('Collected symptoms:', allSymptoms);
+        
+        // Создаем рекомендации на основе симптомов
+        const recommendations = [];
+        
+        // Для сна
+        if (dayData.sleepQuality === 'poor-sleep' || 
+            (dayData.sleepIssues && dayData.sleepIssues.length > 0)) {
+            
+            const sleepSymptoms = ['poor-sleep'];
+            if (dayData.sleepIssues) sleepSymptoms.push(...dayData.sleepIssues);
+            
+            recommendations.push({
+                title: 'Sleep Improvement',
+                description: 'Establish a consistent bedtime routine, avoid screens before sleep, and create a comfortable sleep environment.',
+                symptoms: sleepSymptoms
+            });
+        }
+        
+        // Для воды
+        if (dayData.waterIntake === 'too-little' || 
+            (dayData.dehydrationSymptoms && dayData.dehydrationSymptoms.length > 0)) {
+            
+            const waterSymptoms = ['dehydration'];
+            if (dayData.dehydrationSymptoms) waterSymptoms.push(...dayData.dehydrationSymptoms);
+            
+            recommendations.push({
+                title: 'Hydration',
+                description: 'Drink at least 2 liters of water daily. Use reminders or a water tracking app to stay hydrated.',
+                symptoms: waterSymptoms
+            });
+        }
+        
+        // Для настроения
+        if ((dayData.mood && dayData.mood <= 4) || 
+            (dayData.moodRelated && dayData.moodRelated.length > 0)) {
+            
+            const moodSymptoms = ['low-mood'];
+            if (dayData.moodRelated) moodSymptoms.push(...dayData.moodRelated);
+            
+            recommendations.push({
+                title: 'Mood Management',
+                description: 'Practice mindfulness, engage in physical activity, and maintain social connections for better emotional wellbeing.',
+                symptoms: moodSymptoms
+            });
+        }
+        
+        // Для активности
+        if ((dayData.activityLevel && (dayData.activityLevel <= 3 || dayData.activityLevel >= 8)) || 
+            (dayData.activityIssues && dayData.activityIssues.length > 0)) {
+            
+            const activitySymptoms = [];
+            if (dayData.activityLevel <= 3) activitySymptoms.push('low-activity');
+            if (dayData.activityLevel >= 8) activitySymptoms.push('high-activity');
+            if (dayData.activityIssues) activitySymptoms.push(...dayData.activityIssues);
+            
+            recommendations.push({
+                title: 'Activity Balance',
+                description: 'Aim for moderate daily activity (30-60 minutes). Balance exercise with adequate rest and recovery.',
+                symptoms: activitySymptoms
+            });
+        }
+        
+        console.log('Created recommendations:', recommendations);
+        
+        // Создаем сообщение уведомления
+        let message = `📋 Daily Recommendations for ${date}\n\n`;
+        
+        if (allSymptoms.length > 0) {
+            message += `Total symptoms tracked: ${allSymptoms.length}\n`;
+            message += `Symptoms: ${allSymptoms.join(', ')}\n\n`;
+        } else {
+            message += `No specific symptoms tracked\n\n`;
+        }
+        
+        if (recommendations.length > 0) {
+            recommendations.forEach((rec, index) => {
+                message += `${index + 1}. ${rec.title}: ${rec.description}\n`;
+            });
+        } else {
+            message += "1. General Health: Keep tracking your daily habits for better health insights.\n";
+        }
+        
+        // Создаем объект уведомления
+        const notification = {
+            id: Date.now(),
+            type: 'symptom_recommendations',
+            message: message,
+            sent_at: new Date().toISOString(),
+            read: false
+        };
+        
+        console.log('Notification object:', notification);
+        
+        // Сохраняем в localStorage
+        const currentNotifications = JSON.parse(localStorage.getItem('health_tracker_notifications') || '[]');
+        currentNotifications.unshift(notification);
+        localStorage.setItem('health_tracker_notifications', JSON.stringify(currentNotifications));
+        
+        console.log('✅ Notification saved to localStorage');
+        return true;
+    } catch (error) {
+        console.error('❌ Error creating notification:', error);
+        return false;
+    }
+}
+
+// =================== HEALTH SCORE ФУНКЦИИ ===================
+function calculateSleepScore(sleepHours, sleepQuality, sleepIssues) {
+    let baseScore = 0;
+
+    if (!sleepHours) return 0;
+
+    if (sleepHours >= 7 && sleepHours <= 8) {
+        baseScore = HEALTH_SCORE_CONFIG.sleep.scores.optimal;
+    } else if ((sleepHours >= 6 && sleepHours < 7) || (sleepHours > 8 && sleepHours <= 9)) {
+        baseScore = HEALTH_SCORE_CONFIG.sleep.scores.good;
+    } else if ((sleepHours >= 5 && sleepHours < 6) || (sleepHours > 9 && sleepHours <= 10)) {
+        baseScore = HEALTH_SCORE_CONFIG.sleep.scores.fair;
+    } else if (sleepHours >= 4 && sleepHours < 5) {
+        baseScore = HEALTH_SCORE_CONFIG.sleep.scores.poor;
+    } else {
+        baseScore = HEALTH_SCORE_CONFIG.sleep.scores.veryPoor;
+    }
+
+    if (sleepQuality === 'poor-sleep') {
+        baseScore -= HEALTH_SCORE_CONFIG.sleep.poorSleepPenalty;
+    }
+
+    if (sleepIssues && sleepIssues.length > 0) {
+        const symptomPenalty = sleepIssues.length * HEALTH_SCORE_CONFIG.sleep.symptomPenalty;
+        baseScore -= symptomPenalty;
+    }
+
+    return Math.max(0, Math.min(100, baseScore));
+}
+
+function calculateWaterScore(waterIntake, dehydrationSymptoms) {
+    if (!waterIntake) return 0;
+    let baseScore = HEALTH_SCORE_CONFIG.water.scores[waterIntake] || 50;
+    if (dehydrationSymptoms && dehydrationSymptoms.length > 0) {
+        const symptomPenalty = dehydrationSymptoms.length * HEALTH_SCORE_CONFIG.water.symptomPenalty;
+        baseScore -= symptomPenalty;
+    }
+    return Math.max(0, Math.min(100, baseScore));
+}
+
+function calculateMoodScore(mood, moodRelated) {
+    if (!mood) return 0;
+    let baseScore = HEALTH_SCORE_CONFIG.mood.scores[mood] || 50;
+    if (mood <= 4) baseScore -= HEALTH_SCORE_CONFIG.mood.lowMoodPenalty;
+    if (moodRelated && moodRelated.length > 0) {
+        const symptomPenalty = moodRelated.length * HEALTH_SCORE_CONFIG.mood.symptomPenalty;
+        baseScore -= symptomPenalty;
+    }
+    return Math.max(0, Math.min(100, baseScore));
+}
+
+function calculateActivityScore(activityLevel, activityIssues) {
+    if (!activityLevel) return 0;
+    let baseScore = HEALTH_SCORE_CONFIG.activity.scores[activityLevel] || 50;
+    if (activityLevel <= 3) baseScore -= HEALTH_SCORE_CONFIG.activity.lowActivityPenalty;
+    if (activityLevel >= 8) baseScore -= HEALTH_SCORE_CONFIG.activity.highActivityPenalty;
+    if (activityIssues && activityIssues.length > 0) {
+        const symptomPenalty = activityIssues.length * HEALTH_SCORE_CONFIG.activity.symptomPenalty;
+        baseScore -= symptomPenalty;
+    }
+    return Math.max(0, Math.min(100, baseScore));
+}
+
+function calculateHealthScore(dayData) {
+    const sleepScore = calculateSleepScore(
+        dayData.sleepHours,
+        dayData.sleepQuality,
+        dayData.sleepIssues
+    );
+
+    const waterScore = calculateWaterScore(
+        dayData.waterIntake,
+        dayData.dehydrationSymptoms
+    );
+
+    const moodScore = calculateMoodScore(
+        dayData.mood,
+        dayData.moodRelated
+    );
+
+    const activityScore = calculateActivityScore(
+        dayData.activityLevel,
+        dayData.activityIssues
+    );
+
+    const weightedSleep = sleepScore * (HEALTH_SCORE_CONFIG.sleep.weight / 100);
+    const weightedWater = waterScore * (HEALTH_SCORE_CONFIG.water.weight / 100);
+    const weightedMood = moodScore * (HEALTH_SCORE_CONFIG.mood.weight / 100);
+    const weightedActivity = activityScore * (HEALTH_SCORE_CONFIG.activity.weight / 100);
+
+    const overallScore = Math.round(weightedSleep + weightedWater + weightedMood + weightedActivity);
+
+    return {
+        overallScore,
+        categories: [
+            {
+                name: 'Sleep',
+                score: sleepScore,
+                weight: HEALTH_SCORE_CONFIG.sleep.weight,
+                description: getSleepDescription(dayData.sleepHours, dayData.sleepQuality, dayData.sleepIssues),
+                icon: '😴'
+            },
+            {
+                name: 'Water',
+                score: waterScore,
+                weight: HEALTH_SCORE_CONFIG.water.weight,
+                description: getWaterDescription(dayData.waterIntake, dayData.dehydrationSymptoms),
+                icon: '💧'
+            },
+            {
+                name: 'Mood',
+                score: moodScore,
+                weight: HEALTH_SCORE_CONFIG.mood.weight,
+                description: getMoodDescription(dayData.mood, dayData.moodRelated),
+                icon: '😊'
+            },
+            {
+                name: 'Activity',
+                score: activityScore,
+                weight: HEALTH_SCORE_CONFIG.activity.weight,
+                description: getActivityDescription(dayData.activityLevel, dayData.activityIssues),
+                icon: '🏃'
+            }
+        ],
+        verdict: getVerdict(overallScore)
+    };
+}
+
+function getSleepDescription(hours, quality, issues) {
+    let desc = hours ? `${hours} hours` : 'No data';
+    if (quality === 'poor-sleep') desc += ' (poor quality)';
+    if (issues && issues.length > 0) desc += `, ${issues.length} issue(s)`;
+    return desc;
+}
+
+function getWaterDescription(intake, symptoms) {
+    let desc = intake ? intake.replace('-', ' ') : 'No data';
+    if (symptoms && symptoms.length > 0) desc += `, ${symptoms.length} symptom(s)`;
+    return desc;
+}
+
+function getMoodDescription(mood, related) {
+    let desc = mood ? `${mood}/10` : 'No data';
+    if (related && related.length > 0) desc += `, ${related.length} issue(s)`;
+    return desc;
+}
+
+function getActivityDescription(level, issues) {
+    let desc = level ? `${level}/10` : 'No data';
+    if (issues && issues.length > 0) desc += `, ${issues.length} issue(s)`;
+    return desc;
+}
+
+function getVerdict(score) {
+    if (score >= 90) return { level: 'Excellent', description: 'Outstanding health habits!', color: '#4CAF50', emoji: '🌟' };
+    else if (score >= 80) return { level: 'Great', description: 'Very healthy lifestyle!', color: '#8BC34A', emoji: '💪' };
+    else if (score >= 70) return { level: 'Good', description: 'Solid health metrics.', color: '#FFC107', emoji: '👌' };
+    else if (score >= 60) return { level: 'Fair', description: 'Room for improvement.', color: '#FF9800', emoji: '⚖️' };
+    else if (score >= 50) return { level: 'Needs Work', description: 'Focus on healthier choices.', color: '#F44336', emoji: '📉' };
+    else return { level: 'Poor', description: 'Significant improvements needed.', color: '#D32F2F', emoji: '⚠️' };
+}
+
+function getScoreColor(score) {
+    if (score >= 80) return 'var(--excellent-color)';
+    if (score >= 60) return 'var(--good-color)';
+    if (score >= 40) return 'var(--fair-color)';
+    return 'var(--poor-color)';
+}
+
+// =================== UI ФУНКЦИИ ===================
+let currentDate = new Date();
+let currentYear = currentDate.getFullYear();
+let currentMonth = currentDate.getMonth();
+let selectedDay = null;
+
+// DOM элементы
+let currentMonthYear, calendarDays, dayModal, modalDayTitle, closeModal;
+let sleepSlider, sleepValueDisplay, sleepQualityButtons;
+let waterIntakeButtons, moodSlider, moodValueDisplay, activitySlider, activityValueDisplay;
+let dayNotes, saveDayBtn;
+let sleepIssuesSection, dehydrationSection, moodRelatedSection, activityIssuesSection;
+let sleepIssuesButtons, dehydrationButtons, moodRelatedButtons, activityIssuesButtons;
+let prevMonthBtn, nextMonthBtn;
+
+function showToast(message) {
+    const toast = document.createElement('div');
+    toast.className = 'toast';
+    toast.textContent = message;
+    const toastContainer = document.getElementById('toast-container');
+    toastContainer.appendChild(toast);
+    setTimeout(() => {
+        if (toast.parentNode === toastContainer) {
+            toastContainer.removeChild(toast);
+        }
+    }, 3000);
+}
+
+async function updateStreakDisplay() {
+    const streakFire = document.getElementById('streak-fire');
+    const streakCount = document.getElementById('streak-count');
+
+    const streakData = getStreakFromStorage();
+    const currentStreak = streakData.currentStreak || 0;
+
+    streakCount.textContent = currentStreak;
+    streakCount.style.display = 'block';
+
+    if (currentStreak > 0) {
+        streakFire.className = 'streak-fire active';
+        streakFire.style.animation = 'flame-pulse 0.5s ease-in-out';
+        setTimeout(() => {
+            streakFire.style.animation = '';
+        }, 500);
+    } else {
+        streakFire.className = 'streak-fire inactive';
+    }
+}
+
+function updateHealthScoreDisplay(healthScoreData) {
+    const healthScoreElement = document.getElementById('health-score');
+    const healthLabelElement = document.getElementById('health-label');
+    const ringProgress = document.getElementById('ring-progress');
+    const verdictElement = document.getElementById('health-verdict');
+    const detailsContainer = document.getElementById('health-score-details');
+
+    if (!healthScoreData) {
+        healthScoreElement.textContent = '-';
+        healthLabelElement.textContent = 'No data';
+        verdictElement.textContent = 'Save day data to see your health score';
+        ringProgress.style.strokeDashoffset = '565';
+        displayEmptyHealthScore();
+        return;
+    }
+
+    const { overallScore, categories, verdict } = healthScoreData;
+
+    healthScoreElement.textContent = overallScore;
+    healthLabelElement.innerHTML = `${verdict.emoji} ${verdict.level}`;
+
+    const circumference = 2 * Math.PI * 90;
+    const offset = circumference - (overallScore / 100) * circumference;
+
+    setTimeout(() => {
+        ringProgress.style.strokeDashoffset = offset;
+    }, 100);
+
+    verdictElement.textContent = verdict.description;
+    verdictElement.style.color = verdict.color;
+
+    let detailsHTML = '';
+    categories.forEach(category => {
+        const categoryColor = getScoreColor(category.score);
+
+        detailsHTML += `
+            <div class="score-category ${category.name.toLowerCase()}-category">
+                <div class="category-header">
+                    <div class="category-name">
+                        <span class="category-icon">${category.icon}</span>
+                        ${category.name} (${category.weight}%)
+                    </div>
+                    <div class="category-score">${category.score}</div>
+                </div>
+                <div class="score-bar">
+                    <div class="score-fill" style="width: ${category.score}%; background-color: ${categoryColor};"></div>
+                </div>
+                <div class="score-description">${category.description}</div>
+            </div>
+        `;
+    });
+
+    detailsContainer.innerHTML = detailsHTML;
+
+    setTimeout(() => {
+        const scoreFills = document.querySelectorAll('.score-fill');
+        scoreFills.forEach(fill => {
+            const width = fill.style.width;
+            fill.style.width = '0%';
+            setTimeout(() => {
+                fill.style.width = width;
+            }, 100);
+        });
+    }, 300);
+}
+
+function displayEmptyHealthScore() {
+    const categories = [
+        { name: 'Sleep', weight: 40, color: '#2196F3', description: 'Track your sleep', icon: '😴' },
+        { name: 'Water', weight: 20, color: '#00BCD4', description: 'Record water intake', icon: '💧' },
+        { name: 'Activity', weight: 20, color: '#FF9800', description: 'Log activity level', icon: '🏃' },
+        { name: 'Mood', weight: 20, color: '#9C27B0', description: 'Track your mood', icon: '😊' }
+    ];
+
+    let detailsHTML = '';
+    categories.forEach(category => {
+        detailsHTML += `
+            <div class="score-category ${category.name.toLowerCase()}-category">
+                <div class="category-header">
+                    <div class="category-name">
+                        <span class="category-icon">${category.icon}</span>
+                        ${category.name} (${category.weight}%)
+                    </div>
+                    <div class="category-score">-</div>
+                </div>
+                <div class="score-bar">
+                    <div class="score-fill" style="width: 0%; background-color: ${category.color};"></div>
+                </div>
+                <div class="score-description">${category.description}</div>
+            </div>
+        `;
+    });
+
+    document.getElementById('health-score-details').innerHTML = detailsHTML;
+}
+
+async function loadHealthScore() {
+    const healthScoreElement = document.getElementById('health-score');
+    const healthLabelElement = document.getElementById('health-label');
+    const ringProgress = document.getElementById('ring-progress');
+    const verdictElement = document.getElementById('health-verdict');
+
+    try {
+        healthScoreElement.textContent = '...';
+        healthLabelElement.textContent = 'Calculating...';
+        verdictElement.textContent = '';
+
+        const healthScoreData = await calculateCurrentHealthScore();
+
+        if (healthScoreData) {
+            updateHealthScoreDisplay(healthScoreData);
+        } else {
+            healthScoreElement.textContent = '-';
+            healthLabelElement.textContent = 'No data';
+            verdictElement.textContent = 'Save today\'s data to see your health score';
+            ringProgress.style.strokeDashoffset = '565';
+            displayEmptyHealthScore();
+        }
+    } catch (error) {
+        console.error('Error loading Health Score:', error);
+        healthScoreElement.textContent = '-';
+        healthLabelElement.textContent = 'Error';
+        verdictElement.textContent = 'Failed to calculate health score';
+        ringProgress.style.strokeDashoffset = '565';
+        displayEmptyHealthScore();
+    }
+}
+
+async function calculateCurrentHealthScore() {
+    try {
+        let dayData = {
+            sleepHours: parseFloat(sleepSlider?.value) || null,
+            sleepQuality: getSelectedValue(sleepQualityButtons) || '',
+            waterIntake: getSelectedValue(waterIntakeButtons) || null,
+            mood: parseInt(moodSlider?.value) || null,
+            activityLevel: parseInt(activitySlider?.value) || null,
+            sleepIssues: getSelectedValues(sleepIssuesButtons) || [],
+            dehydrationSymptoms: getSelectedValues(dehydrationButtons) || [],
+            moodRelated: getSelectedValues(moodRelatedButtons) || [],
+            activityIssues: getSelectedValues(activityIssuesButtons) || []
         };
 
-        // =================== ФУНКЦИИ ДЛЯ РАБОТЫ С LOCALSTORAGE ===================
-        function getDaysFromStorage() {
-            try {
-                const days = localStorage.getItem(DAYS_STORAGE_KEY);
-                return days ? JSON.parse(days) : {};
-            } catch (error) {
-                console.error('Error reading days from localStorage:', error);
-                return {};
+        const today = new Date().toISOString().split('T')[0];
+        const savedDayData = getDayFromStorage(today);
+        
+        if (savedDayData) {
+            dayData = { ...savedDayData, ...dayData };
+        }
+
+        return calculateHealthScore(dayData);
+    } catch (error) {
+        console.error('Error calculating Health Score:', error);
+        return null;
+    }
+}
+
+function getSelectedValue(buttonGroup) {
+    const selectedButton = buttonGroup?.querySelector('.notion-button.selected');
+    return selectedButton ? selectedButton.dataset.value : null;
+}
+
+function getSelectedValues(buttonGroup) {
+    const selectedButtons = buttonGroup?.querySelectorAll('.notion-button.selected') || [];
+    return Array.from(selectedButtons).map(btn => btn.dataset.value);
+}
+
+async function renderCalendar() {
+    if (!currentMonthYear) return;
+
+    currentMonthYear.textContent = new Date(currentYear, currentMonth).toLocaleDateString('en-US', { 
+        month: 'long', 
+        year: 'numeric' 
+    });
+    calendarDays.innerHTML = '';
+
+    const firstDay = new Date(currentYear, currentMonth, 1).getDay();
+    const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+
+    for (let i = 0; i < firstDay; i++) {
+        const emptyDay = document.createElement('div');
+        emptyDay.className = 'calendar-day empty';
+        emptyDay.style.visibility = 'hidden';
+        calendarDays.appendChild(emptyDay);
+    }
+
+    const monthData = getDaysFromStorage();
+
+    for (let day = 1; day <= daysInMonth; day++) {
+        const dayElement = document.createElement('div');
+        dayElement.className = 'calendar-day';
+        dayElement.dataset.day = day;
+        dayElement.dataset.month = currentMonth + 1;
+        dayElement.dataset.year = currentYear;
+
+        const dayNumber = document.createElement('div');
+        dayNumber.className = 'calendar-day-number';
+        dayNumber.textContent = day;
+        dayElement.appendChild(dayNumber);
+
+        const dateKey = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+        const dayData = monthData[dateKey];
+
+        const hasData = dayData && (
+            dayData.sleepHours !== undefined ||
+            dayData.mood !== undefined ||
+            dayData.activityLevel !== undefined ||
+            dayData.waterIntake !== undefined
+        );
+
+        if (hasData) {
+            dayElement.classList.add('saved');
+            const savedIndicator = document.createElement('span');
+            savedIndicator.className = 'saved-day-checkmark';
+            savedIndicator.textContent = '✓';
+            savedIndicator.title = 'Day saved';
+            dayElement.appendChild(savedIndicator);
+        }
+
+        dayElement.addEventListener('click', (e) => {
+            e.stopPropagation();
+            selectedDay = day;
+            openDayModal(currentYear, currentMonth, day);
+        });
+
+        const today = new Date();
+        if (currentYear === today.getFullYear() &&
+            currentMonth === today.getMonth() &&
+            day === today.getDate()) {
+            dayElement.classList.add('today');
+        }
+
+        calendarDays.appendChild(dayElement);
+    }
+}
+
+function handleButtonClick(event, isMultiSelect) {
+    const clickedButton = event.target.closest('.notion-button');
+    if (!clickedButton) return;
+    const buttonGroup = clickedButton.parentElement;
+    const buttons = buttonGroup.querySelectorAll('.notion-button');
+    if (!isMultiSelect) buttons.forEach(btn => btn.classList.remove('selected'));
+    clickedButton.classList.toggle('selected');
+}
+
+function checkSleepCondition() {
+    const poorSleepSelected = sleepQualityButtons.querySelector('[data-value="poor-sleep"]')?.classList.contains('selected') || false;
+    sleepIssuesSection.style.display = poorSleepSelected ? 'block' : 'none';
+}
+
+function checkWaterCondition() {
+    const tooLittleSelected = waterIntakeButtons.querySelector('[data-value="too-little"]')?.classList.contains('selected') || false;
+    dehydrationSection.style.display = tooLittleSelected ? 'block' : 'none';
+}
+
+function checkMoodCondition() {
+    const moodValue = parseInt(moodSlider.value);
+    moodRelatedSection.style.display = moodValue <= 4 ? 'block' : 'none';
+}
+
+function checkActivityCondition() {
+    const activityValue = parseInt(activitySlider.value);
+    activityIssuesSection.style.display = (activityValue <= 3 || activityValue >= 8) ? 'block' : 'none';
+}
+
+async function openDayModal(year, month, day) {
+    try {
+        const date = new Date(year, month, day);
+        modalDayTitle.textContent = date.toLocaleDateString('en-US', {
+            weekday: 'long',
+            month: 'long',
+            day: 'numeric',
+            year: 'numeric'
+        });
+
+        const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+        const dayData = getDayFromStorage(dateStr);
+
+        sleepSlider.value = dayData ? dayData.sleepHours || 7 : 7;
+        sleepValueDisplay.textContent = parseFloat(sleepSlider.value).toFixed(1) + ' hrs';
+        moodSlider.value = dayData ? dayData.mood || 5 : 5;
+        moodValueDisplay.textContent = moodSlider.value;
+        activitySlider.value = dayData ? dayData.activityLevel || 5 : 5;
+        activityValueDisplay.textContent = activitySlider.value;
+        dayNotes.value = dayData ? dayData.notes || '' : '';
+
+        const allButtons = document.querySelectorAll('.notion-button');
+        allButtons.forEach(btn => btn.classList.remove('selected'));
+
+        if (dayData) {
+            if (dayData.sleepQuality) {
+                const sleepBtn = sleepQualityButtons.querySelector(`[data-value="${dayData.sleepQuality}"]`);
+                if (sleepBtn) sleepBtn.classList.add('selected');
+            }
+            if (dayData.waterIntake) {
+                const waterBtn = waterIntakeButtons.querySelector(`[data-value="${dayData.waterIntake}"]`);
+                if (waterBtn) waterBtn.classList.add('selected');
+            }
+            if (dayData.sleepIssues && Array.isArray(dayData.sleepIssues)) {
+                dayData.sleepIssues.forEach(issue => {
+                    const issueBtn = sleepIssuesButtons.querySelector(`[data-value="${issue}"]`);
+                    if (issueBtn) issueBtn.classList.add('selected');
+                });
+            }
+            if (dayData.dehydrationSymptoms && Array.isArray(dayData.dehydrationSymptoms)) {
+                dayData.dehydrationSymptoms.forEach(symptom => {
+                    const symptomBtn = dehydrationButtons.querySelector(`[data-value="${symptom}"]`);
+                    if (symptomBtn) symptomBtn.classList.add('selected');
+                });
+            }
+            if (dayData.moodRelated && Array.isArray(dayData.moodRelated)) {
+                dayData.moodRelated.forEach(mood => {
+                    const moodBtn = moodRelatedButtons.querySelector(`[data-value="${mood}"]`);
+                    if (moodBtn) moodBtn.classList.add('selected');
+                });
+            }
+            if (dayData.activityIssues && Array.isArray(dayData.activityIssues)) {
+                dayData.activityIssues.forEach(issue => {
+                    const issueBtn = activityIssuesButtons.querySelector(`[data-value="${issue}"]`);
+                    if (issueBtn) issueBtn.classList.add('selected');
+                });
             }
         }
 
-        function saveDayToStorage(date, dayData) {
-            try {
-                const days = getDaysFromStorage();
-                days[date] = {
-                    ...dayData,
-                    savedAt: new Date().toISOString()
-                };
-                localStorage.setItem(DAYS_STORAGE_KEY, JSON.stringify(days));
-                return true;
-            } catch (error) {
-                console.error('Error saving day to localStorage:', error);
-                return false;
+        checkSleepCondition();
+        checkWaterCondition();
+        checkMoodCondition();
+        checkActivityCondition();
+
+        dayModal.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+    } catch (error) {
+        console.error('Error opening day modal:', error);
+        showToast('Error opening day details');
+    }
+}
+
+async function saveDayData() {
+    if (!selectedDay) return;
+
+    const dayData = {
+        sleepHours: parseFloat(sleepSlider.value),
+        sleepQuality: getSelectedValue(sleepQualityButtons),
+        waterIntake: getSelectedValue(waterIntakeButtons),
+        mood: parseInt(moodSlider.value),
+        activityLevel: parseInt(activitySlider.value),
+        notes: dayNotes.value,
+        sleepIssues: getSelectedValues(sleepIssuesButtons),
+        dehydrationSymptoms: getSelectedValues(dehydrationButtons),
+        moodRelated: getSelectedValues(moodRelatedButtons),
+        activityIssues: getSelectedValues(activityIssuesButtons),
+        negativeFactors: []
+    };
+
+    const negativeButtons = document.querySelectorAll('.notion-button[data-negative="true"].selected');
+    negativeButtons.forEach(btn => dayData.negativeFactors.push(btn.dataset.value));
+
+    try {
+        const dateStr = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(selectedDay).padStart(2, '0')}`;
+
+        // Сохраняем день
+        if (saveDayToStorage(dateStr, dayData)) {
+            // Обновляем streak
+            const streakResult = updateStreakInStorage(dateStr);
+            
+            // Всегда создаем уведомление при сохранении дня
+            console.log('Saving day, creating notification...');
+            const notificationCreated = createNotificationForDay(dayData, dateStr);
+            console.log('Notification created:', notificationCreated);
+
+            dayModal.style.display = 'none';
+            document.body.style.overflow = '';
+
+            await renderCalendar();
+            await updateStreakDisplay();
+            await loadHealthScore();
+
+            let streakMessage = '';
+            if (streakResult.streakIncremented) {
+                streakMessage = `Streak: ${streakResult.currentStreak} days!`;
             }
-        }
 
-        function getDayFromStorage(date) {
-            const days = getDaysFromStorage();
-            return days[date] || null;
-        }
-
-        function getStreakFromStorage() {
-            try {
-                const streakData = localStorage.getItem(STREAK_STORAGE_KEY);
-                return streakData ? JSON.parse(streakData) : { currentStreak: 0, lastDate: null };
-            } catch (error) {
-                console.error('Error reading streak from localStorage:', error);
-                return { currentStreak: 0, lastDate: null };
-            }
-        }
-
-        function updateStreakInStorage(date) {
-            try {
-                const streakData = getStreakFromStorage();
-                const today = new Date(date);
-                const lastDate = streakData.lastDate ? new Date(streakData.lastDate) : null;
-                
-                let currentStreak = streakData.currentStreak;
-                let streakIncremented = false;
-                
-                if (lastDate) {
-                    const dayDiff = Math.floor((today - lastDate) / (1000 * 60 * 60 * 24));
-                    
-                    if (dayDiff === 1) {
-                        // Последовательные дни
-                        currentStreak++;
-                        streakIncremented = true;
-                    } else if (dayDiff > 1) {
-                        // Пропущены дни
-                        currentStreak = 1;
-                    }
-                    // dayDiff === 0: тот же день, не меняем streak
-                } else {
-                    // Первая запись
-                    currentStreak = 1;
-                    streakIncremented = true;
-                }
-                
-                const newStreakData = {
-                    currentStreak: currentStreak,
-                    lastDate: today.toISOString().split('T')[0]
-                };
-                
-                localStorage.setItem(STREAK_STORAGE_KEY, JSON.stringify(newStreakData));
-                
-                return {
-                    success: true,
-                    currentStreak: currentStreak,
-                    streakIncremented: streakIncremented
-                };
-            } catch (error) {
-                console.error('Error updating streak:', error);
-                return { success: false, currentStreak: 0, streakIncremented: false };
-            }
-        }
-
-        // =================== HEALTH SCORE ФУНКЦИИ ===================
-        function calculateSleepScore(sleepHours, sleepQuality, sleepIssues) {
-            let baseScore = 0;
-
-            if (!sleepHours) return 0;
-
-            if (sleepHours >= 7 && sleepHours <= 8) {
-                baseScore = HEALTH_SCORE_CONFIG.sleep.scores.optimal;
-            } else if ((sleepHours >= 6 && sleepHours < 7) || (sleepHours > 8 && sleepHours <= 9)) {
-                baseScore = HEALTH_SCORE_CONFIG.sleep.scores.good;
-            } else if ((sleepHours >= 5 && sleepHours < 6) || (sleepHours > 9 && sleepHours <= 10)) {
-                baseScore = HEALTH_SCORE_CONFIG.sleep.scores.fair;
-            } else if (sleepHours >= 4 && sleepHours < 5) {
-                baseScore = HEALTH_SCORE_CONFIG.sleep.scores.poor;
+            if (streakMessage) {
+                showToast(streakMessage);
             } else {
-                baseScore = HEALTH_SCORE_CONFIG.sleep.scores.veryPoor;
+                showToast('Day saved successfully!');
             }
-
-            if (sleepQuality === 'poor-sleep') {
-                baseScore -= HEALTH_SCORE_CONFIG.sleep.poorSleepPenalty;
-            }
-
-            if (sleepIssues && sleepIssues.length > 0) {
-                const symptomPenalty = sleepIssues.length * HEALTH_SCORE_CONFIG.sleep.symptomPenalty;
-                baseScore -= symptomPenalty;
-            }
-
-            return Math.max(0, Math.min(100, baseScore));
+        } else {
+            throw new Error('Failed to save day data');
         }
-
-        function calculateWaterScore(waterIntake, dehydrationSymptoms) {
-            if (!waterIntake) return 0;
-            let baseScore = HEALTH_SCORE_CONFIG.water.scores[waterIntake] || 50;
-            if (dehydrationSymptoms && dehydrationSymptoms.length > 0) {
-                const symptomPenalty = dehydrationSymptoms.length * HEALTH_SCORE_CONFIG.water.symptomPenalty;
-                baseScore -= symptomPenalty;
-            }
-            return Math.max(0, Math.min(100, baseScore));
-        }
-
-        function calculateMoodScore(mood, moodRelated) {
-            if (!mood) return 0;
-            let baseScore = HEALTH_SCORE_CONFIG.mood.scores[mood] || 50;
-            if (mood <= 4) baseScore -= HEALTH_SCORE_CONFIG.mood.lowMoodPenalty;
-            if (moodRelated && moodRelated.length > 0) {
-                const symptomPenalty = moodRelated.length * HEALTH_SCORE_CONFIG.mood.symptomPenalty;
-                baseScore -= symptomPenalty;
-            }
-            return Math.max(0, Math.min(100, baseScore));
-        }
-
-        function calculateActivityScore(activityLevel, activityIssues) {
-            if (!activityLevel) return 0;
-            let baseScore = HEALTH_SCORE_CONFIG.activity.scores[activityLevel] || 50;
-            if (activityLevel <= 3) baseScore -= HEALTH_SCORE_CONFIG.activity.lowActivityPenalty;
-            if (activityLevel >= 8) baseScore -= HEALTH_SCORE_CONFIG.activity.highActivityPenalty;
-            if (activityIssues && activityIssues.length > 0) {
-                const symptomPenalty = activityIssues.length * HEALTH_SCORE_CONFIG.activity.symptomPenalty;
-                baseScore -= symptomPenalty;
-            }
-            return Math.max(0, Math.min(100, baseScore));
-        }
-
-        function calculateHealthScore(dayData) {
-            const sleepScore = calculateSleepScore(
-                dayData.sleepHours,
-                dayData.sleepQuality,
-                dayData.sleepIssues
-            );
-
-            const waterScore = calculateWaterScore(
-                dayData.waterIntake,
-                dayData.dehydrationSymptoms
-            );
-
-            const moodScore = calculateMoodScore(
-                dayData.mood,
-                dayData.moodRelated
-            );
-
-            const activityScore = calculateActivityScore(
-                dayData.activityLevel,
-                dayData.activityIssues
-            );
-
-            const weightedSleep = sleepScore * (HEALTH_SCORE_CONFIG.sleep.weight / 100);
-            const weightedWater = waterScore * (HEALTH_SCORE_CONFIG.water.weight / 100);
-            const weightedMood = moodScore * (HEALTH_SCORE_CONFIG.mood.weight / 100);
-            const weightedActivity = activityScore * (HEALTH_SCORE_CONFIG.activity.weight / 100);
-
-            const overallScore = Math.round(weightedSleep + weightedWater + weightedMood + weightedActivity);
-
-            return {
-                overallScore,
-                categories: [
-                    {
-                        name: 'Sleep',
-                        score: sleepScore,
-                        weight: HEALTH_SCORE_CONFIG.sleep.weight,
-                        description: getSleepDescription(dayData.sleepHours, dayData.sleepQuality, dayData.sleepIssues),
-                        icon: '😴'
-                    },
-                    {
-                        name: 'Water',
-                        score: waterScore,
-                        weight: HEALTH_SCORE_CONFIG.water.weight,
-                        description: getWaterDescription(dayData.waterIntake, dayData.dehydrationSymptoms),
-                        icon: '💧'
-                    },
-                    {
-                        name: 'Mood',
-                        score: moodScore,
-                        weight: HEALTH_SCORE_CONFIG.mood.weight,
-                        description: getMoodDescription(dayData.mood, dayData.moodRelated),
-                        icon: '😊'
-                    },
-                    {
-                        name: 'Activity',
-                        score: activityScore,
-                        weight: HEALTH_SCORE_CONFIG.activity.weight,
-                        description: getActivityDescription(dayData.activityLevel, dayData.activityIssues),
-                        icon: '🏃'
-                    }
-                ],
-                verdict: getVerdict(overallScore)
-            };
-        }
-
-        function getSleepDescription(hours, quality, issues) {
-            let desc = hours ? `${hours} hours` : 'No data';
-            if (quality === 'poor-sleep') desc += ' (poor quality)';
-            if (issues && issues.length > 0) desc += `, ${issues.length} issue(s)`;
-            return desc;
-        }
-
-        function getWaterDescription(intake, symptoms) {
-            let desc = intake ? intake.replace('-', ' ') : 'No data';
-            if (symptoms && symptoms.length > 0) desc += `, ${symptoms.length} symptom(s)`;
-            return desc;
-        }
-
-        function getMoodDescription(mood, related) {
-            let desc = mood ? `${mood}/10` : 'No data';
-            if (related && related.length > 0) desc += `, ${related.length} issue(s)`;
-            return desc;
-        }
-
-        function getActivityDescription(level, issues) {
-            let desc = level ? `${level}/10` : 'No data';
-            if (issues && issues.length > 0) desc += `, ${issues.length} issue(s)`;
-            return desc;
-        }
-
-        function getVerdict(score) {
-            if (score >= 90) return { level: 'Excellent', description: 'Outstanding health habits!', color: '#4CAF50', emoji: '🌟' };
-            else if (score >= 80) return { level: 'Great', description: 'Very healthy lifestyle!', color: '#8BC34A', emoji: '💪' };
-            else if (score >= 70) return { level: 'Good', description: 'Solid health metrics.', color: '#FFC107', emoji: '👌' };
-            else if (score >= 60) return { level: 'Fair', description: 'Room for improvement.', color: '#FF9800', emoji: '⚖️' };
-            else if (score >= 50) return { level: 'Needs Work', description: 'Focus on healthier choices.', color: '#F44336', emoji: '📉' };
-            else return { level: 'Poor', description: 'Significant improvements needed.', color: '#D32F2F', emoji: '⚠️' };
-        }
-
-        function getScoreColor(score) {
-            if (score >= 80) return 'var(--excellent-color)';
-            if (score >= 60) return 'var(--good-color)';
-            if (score >= 40) return 'var(--fair-color)';
-            return 'var(--poor-color)';
-        }
-
-        // =================== UI ФУНКЦИИ ===================
-        let currentDate = new Date();
-        let currentYear = currentDate.getFullYear();
-        let currentMonth = currentDate.getMonth();
-        let selectedDay = null;
-
-        // DOM элементы
-        let currentMonthYear, calendarDays, dayModal, modalDayTitle, closeModal;
-        let sleepSlider, sleepValueDisplay, sleepQualityButtons;
-        let waterIntakeButtons, moodSlider, moodValueDisplay, activitySlider, activityValueDisplay;
-        let dayNotes, saveDayBtn;
-        let sleepIssuesSection, dehydrationSection, moodRelatedSection, activityIssuesSection;
-        let sleepIssuesButtons, dehydrationButtons, moodRelatedButtons, activityIssuesButtons;
-        let prevMonthBtn, nextMonthBtn;
-
-        function showToast(message) {
-            const toast = document.createElement('div');
-            toast.className = 'toast';
-            toast.textContent = message;
-            const toastContainer = document.getElementById('toast-container');
-            toastContainer.appendChild(toast);
-            setTimeout(() => {
-                if (toast.parentNode === toastContainer) {
-                    toastContainer.removeChild(toast);
-                }
-            }, 3000);
-        }
-
-        async function updateStreakDisplay() {
-            const streakFire = document.getElementById('streak-fire');
-            const streakCount = document.getElementById('streak-count');
-
-            const streakData = getStreakFromStorage();
-            const currentStreak = streakData.currentStreak || 0;
-
-            streakCount.textContent = currentStreak;
-            streakCount.style.display = 'block';
-
-            if (currentStreak > 0) {
-                streakFire.className = 'streak-fire active';
-                streakFire.style.animation = 'flame-pulse 0.5s ease-in-out';
-                setTimeout(() => {
-                    streakFire.style.animation = '';
-                }, 500);
-            } else {
-                streakFire.className = 'streak-fire inactive';
-            }
-        }
-
-        function updateHealthScoreDisplay(healthScoreData) {
-            const healthScoreElement = document.getElementById('health-score');
-            const healthLabelElement = document.getElementById('health-label');
-            const ringProgress = document.getElementById('ring-progress');
-            const verdictElement = document.getElementById('health-verdict');
-            const detailsContainer = document.getElementById('health-score-details');
-
-            if (!healthScoreData) {
-                healthScoreElement.textContent = '-';
-                healthLabelElement.textContent = 'No data';
-                verdictElement.textContent = 'Save day data to see your health score';
-                ringProgress.style.strokeDashoffset = '565';
-                displayEmptyHealthScore();
-                return;
-            }
-
-            const { overallScore, categories, verdict } = healthScoreData;
-
-            healthScoreElement.textContent = overallScore;
-            healthLabelElement.innerHTML = `${verdict.emoji} ${verdict.level}`;
-
-            const circumference = 2 * Math.PI * 90;
-            const offset = circumference - (overallScore / 100) * circumference;
-
-            setTimeout(() => {
-                ringProgress.style.strokeDashoffset = offset;
-            }, 100);
-
-            verdictElement.textContent = verdict.description;
-            verdictElement.style.color = verdict.color;
-
-            let detailsHTML = '';
-            categories.forEach(category => {
-                const categoryColor = getScoreColor(category.score);
-
-                detailsHTML += `
-                    <div class="score-category ${category.name.toLowerCase()}-category">
-                        <div class="category-header">
-                            <div class="category-name">
-                                <span class="category-icon">${category.icon}</span>
-                                ${category.name} (${category.weight}%)
-                            </div>
-                            <div class="category-score">${category.score}</div>
-                        </div>
-                        <div class="score-bar">
-                            <div class="score-fill" style="width: ${category.score}%; background-color: ${categoryColor};"></div>
-                        </div>
-                        <div class="score-description">${category.description}</div>
-                    </div>
-                `;
-            });
-
-            detailsContainer.innerHTML = detailsHTML;
-
-            setTimeout(() => {
-                const scoreFills = document.querySelectorAll('.score-fill');
-                scoreFills.forEach(fill => {
-                    const width = fill.style.width;
-                    fill.style.width = '0%';
-                    setTimeout(() => {
-                        fill.style.width = width;
-                    }, 100);
-                });
-            }, 300);
-        }
-
-        function displayEmptyHealthScore() {
-            const categories = [
-                { name: 'Sleep', weight: 40, color: '#2196F3', description: 'Track your sleep', icon: '😴' },
-                { name: 'Water', weight: 20, color: '#00BCD4', description: 'Record water intake', icon: '💧' },
-                { name: 'Activity', weight: 20, color: '#FF9800', description: 'Log activity level', icon: '🏃' },
-                { name: 'Mood', weight: 20, color: '#9C27B0', description: 'Track your mood', icon: '😊' }
-            ];
-
-            let detailsHTML = '';
-            categories.forEach(category => {
-                detailsHTML += `
-                    <div class="score-category ${category.name.toLowerCase()}-category">
-                        <div class="category-header">
-                            <div class="category-name">
-                                <span class="category-icon">${category.icon}</span>
-                                ${category.name} (${category.weight}%)
-                            </div>
-                            <div class="category-score">-</div>
-                        </div>
-                        <div class="score-bar">
-                            <div class="score-fill" style="width: 0%; background-color: ${category.color};"></div>
-                        </div>
-                        <div class="score-description">${category.description}</div>
-                    </div>
-                `;
-            });
-
-            document.getElementById('health-score-details').innerHTML = detailsHTML;
-        }
-
-        async function loadHealthScore() {
-            const healthScoreElement = document.getElementById('health-score');
-            const healthLabelElement = document.getElementById('health-label');
-            const ringProgress = document.getElementById('ring-progress');
-            const verdictElement = document.getElementById('health-verdict');
-
-            try {
-                healthScoreElement.textContent = '...';
-                healthLabelElement.textContent = 'Calculating...';
-                verdictElement.textContent = '';
-
-                const healthScoreData = await calculateCurrentHealthScore();
-
-                if (healthScoreData) {
-                    updateHealthScoreDisplay(healthScoreData);
-                } else {
-                    healthScoreElement.textContent = '-';
-                    healthLabelElement.textContent = 'No data';
-                    verdictElement.textContent = 'Save today\'s data to see your health score';
-                    ringProgress.style.strokeDashoffset = '565';
-                    displayEmptyHealthScore();
-                }
-            } catch (error) {
-                console.error('Error loading Health Score:', error);
-                healthScoreElement.textContent = '-';
-                healthLabelElement.textContent = 'Error';
-                verdictElement.textContent = 'Failed to calculate health score';
-                ringProgress.style.strokeDashoffset = '565';
-                displayEmptyHealthScore();
-            }
-        }
-
-        async function calculateCurrentHealthScore() {
-            try {
-                let dayData = {
-                    sleepHours: parseFloat(sleepSlider?.value) || null,
-                    sleepQuality: getSelectedValue(sleepQualityButtons) || '',
-                    waterIntake: getSelectedValue(waterIntakeButtons) || null,
-                    mood: parseInt(moodSlider?.value) || null,
-                    activityLevel: parseInt(activitySlider?.value) || null,
-                    sleepIssues: getSelectedValues(sleepIssuesButtons) || [],
-                    dehydrationSymptoms: getSelectedValues(dehydrationButtons) || [],
-                    moodRelated: getSelectedValues(moodRelatedButtons) || [],
-                    activityIssues: getSelectedValues(activityIssuesButtons) || []
-                };
-
-                const today = new Date().toISOString().split('T')[0];
-                const savedDayData = getDayFromStorage(today);
-                
-                if (savedDayData) {
-                    dayData = { ...savedDayData, ...dayData };
-                }
-
-                return calculateHealthScore(dayData);
-            } catch (error) {
-                console.error('Error calculating Health Score:', error);
-                return null;
-            }
-        }
-
-        function getSelectedValue(buttonGroup) {
-            const selectedButton = buttonGroup?.querySelector('.notion-button.selected');
-            return selectedButton ? selectedButton.dataset.value : null;
-        }
-
-        function getSelectedValues(buttonGroup) {
-            const selectedButtons = buttonGroup?.querySelectorAll('.notion-button.selected') || [];
-            return Array.from(selectedButtons).map(btn => btn.dataset.value);
-        }
-
-        async function renderCalendar() {
-            if (!currentMonthYear) return;
-
-            currentMonthYear.textContent = new Date(currentYear, currentMonth).toLocaleDateString('en-US', { 
-                month: 'long', 
-                year: 'numeric' 
-            });
-            calendarDays.innerHTML = '';
-
-            const firstDay = new Date(currentYear, currentMonth, 1).getDay();
-            const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
-
-            for (let i = 0; i < firstDay; i++) {
-                const emptyDay = document.createElement('div');
-                emptyDay.className = 'calendar-day empty';
-                emptyDay.style.visibility = 'hidden';
-                calendarDays.appendChild(emptyDay);
-            }
-
-            const monthData = getDaysFromStorage();
-
-            for (let day = 1; day <= daysInMonth; day++) {
-                const dayElement = document.createElement('div');
-                dayElement.className = 'calendar-day';
-                dayElement.dataset.day = day;
-                dayElement.dataset.month = currentMonth + 1;
-                dayElement.dataset.year = currentYear;
-
-                const dayNumber = document.createElement('div');
-                dayNumber.className = 'calendar-day-number';
-                dayNumber.textContent = day;
-                dayElement.appendChild(dayNumber);
-
-                const dateKey = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-                const dayData = monthData[dateKey];
-
-                const hasData = dayData && (
-                    dayData.sleepHours !== undefined ||
-                    dayData.mood !== undefined ||
-                    dayData.activityLevel !== undefined ||
-                    dayData.waterIntake !== undefined
-                );
-
-                if (hasData) {
-                    dayElement.classList.add('saved');
-                    const savedIndicator = document.createElement('span');
-                    savedIndicator.className = 'saved-day-checkmark';
-                    savedIndicator.textContent = '✓';
-                    savedIndicator.title = 'Day saved';
-                    dayElement.appendChild(savedIndicator);
-                }
-
-                dayElement.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    selectedDay = day;
-                    openDayModal(currentYear, currentMonth, day);
-                });
-
-                const today = new Date();
-                if (currentYear === today.getFullYear() &&
-                    currentMonth === today.getMonth() &&
-                    day === today.getDate()) {
-                    dayElement.classList.add('today');
-                }
-
-                calendarDays.appendChild(dayElement);
-            }
-        }
-
-        function handleButtonClick(event, isMultiSelect) {
-            const clickedButton = event.target.closest('.notion-button');
-            if (!clickedButton) return;
-            const buttonGroup = clickedButton.parentElement;
-            const buttons = buttonGroup.querySelectorAll('.notion-button');
-            if (!isMultiSelect) buttons.forEach(btn => btn.classList.remove('selected'));
-            clickedButton.classList.toggle('selected');
-        }
-
-        function checkSleepCondition() {
-            const poorSleepSelected = sleepQualityButtons.querySelector('[data-value="poor-sleep"]')?.classList.contains('selected') || false;
-            sleepIssuesSection.style.display = poorSleepSelected ? 'block' : 'none';
-        }
-
-        function checkWaterCondition() {
-            const tooLittleSelected = waterIntakeButtons.querySelector('[data-value="too-little"]')?.classList.contains('selected') || false;
-            dehydrationSection.style.display = tooLittleSelected ? 'block' : 'none';
-        }
-
-        function checkMoodCondition() {
-            const moodValue = parseInt(moodSlider.value);
-            moodRelatedSection.style.display = moodValue <= 4 ? 'block' : 'none';
-        }
-
-        function checkActivityCondition() {
-            const activityValue = parseInt(activitySlider.value);
-            activityIssuesSection.style.display = (activityValue <= 3 || activityValue >= 8) ? 'block' : 'none';
-        }
-
-        async function openDayModal(year, month, day) {
-            try {
-                const date = new Date(year, month, day);
-                modalDayTitle.textContent = date.toLocaleDateString('en-US', {
-                    weekday: 'long',
-                    month: 'long',
-                    day: 'numeric',
-                    year: 'numeric'
-                });
-
-                const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-                const dayData = getDayFromStorage(dateStr);
-
-                sleepSlider.value = dayData ? dayData.sleepHours || 7 : 7;
-                sleepValueDisplay.textContent = parseFloat(sleepSlider.value).toFixed(1) + ' hrs';
-                moodSlider.value = dayData ? dayData.mood || 5 : 5;
-                moodValueDisplay.textContent = moodSlider.value;
-                activitySlider.value = dayData ? dayData.activityLevel || 5 : 5;
-                activityValueDisplay.textContent = activitySlider.value;
-                dayNotes.value = dayData ? dayData.notes || '' : '';
-
-                const allButtons = document.querySelectorAll('.notion-button');
-                allButtons.forEach(btn => btn.classList.remove('selected'));
-
-                if (dayData) {
-                    if (dayData.sleepQuality) {
-                        const sleepBtn = sleepQualityButtons.querySelector(`[data-value="${dayData.sleepQuality}"]`);
-                        if (sleepBtn) sleepBtn.classList.add('selected');
-                    }
-                    if (dayData.waterIntake) {
-                        const waterBtn = waterIntakeButtons.querySelector(`[data-value="${dayData.waterIntake}"]`);
-                        if (waterBtn) waterBtn.classList.add('selected');
-                    }
-                    if (dayData.sleepIssues && Array.isArray(dayData.sleepIssues)) {
-                        dayData.sleepIssues.forEach(issue => {
-                            const issueBtn = sleepIssuesButtons.querySelector(`[data-value="${issue}"]`);
-                            if (issueBtn) issueBtn.classList.add('selected');
-                        });
-                    }
-                    if (dayData.dehydrationSymptoms && Array.isArray(dayData.dehydrationSymptoms)) {
-                        dayData.dehydrationSymptoms.forEach(symptom => {
-                            const symptomBtn = dehydrationButtons.querySelector(`[data-value="${symptom}"]`);
-                            if (symptomBtn) symptomBtn.classList.add('selected');
-                        });
-                    }
-                    if (dayData.moodRelated && Array.isArray(dayData.moodRelated)) {
-                        dayData.moodRelated.forEach(mood => {
-                            const moodBtn = moodRelatedButtons.querySelector(`[data-value="${mood}"]`);
-                            if (moodBtn) moodBtn.classList.add('selected');
-                        });
-                    }
-                    if (dayData.activityIssues && Array.isArray(dayData.activityIssues)) {
-                        dayData.activityIssues.forEach(issue => {
-                            const issueBtn = activityIssuesButtons.querySelector(`[data-value="${issue}"]`);
-                            if (issueBtn) issueBtn.classList.add('selected');
-                        });
-                    }
-                }
-
-                checkSleepCondition();
-                checkWaterCondition();
-                checkMoodCondition();
-                checkActivityCondition();
-
-                dayModal.style.display = 'flex';
-                document.body.style.overflow = 'hidden';
-            } catch (error) {
-                console.error('Error opening day modal:', error);
-                showToast('Error opening day details');
-            }
-        }
-
-        // Функция для создания уведомления на основе данных дня
-        function createNotificationForDay(dayData, date) {
-            try {
-                // Проверяем, нужно ли создавать уведомление
-                const hasNegativeFactors = 
-                    dayData.sleepQuality === 'poor-sleep' ||
-                    (dayData.sleepIssues && dayData.sleepIssues.length > 0) ||
-                    dayData.waterIntake === 'too-little' ||
-                    (dayData.dehydrationSymptoms && dayData.dehydrationSymptoms.length > 0) ||
-                    (dayData.mood && dayData.mood <= 4) ||
-                    (dayData.moodRelated && dayData.moodRelated.length > 0) ||
-                    (dayData.activityLevel && (dayData.activityLevel <= 3 || dayData.activityLevel >= 8)) ||
-                    (dayData.activityIssues && dayData.activityIssues.length > 0);
-                
-                if (!hasNegativeFactors) {
-                    return false; // Нет негативных факторов, уведомление не нужно
-                }
-                
-                // Используем функцию из inbox.html если она доступна
-                if (window.createNotificationFromDayData) {
-                    return window.createNotificationFromDayData(dayData, date);
-                }
-                
-                // Или создаем простое уведомление
-                const notification = {
-                    id: Date.now(),
-                    type: 'symptom_recommendations',
-                    message: `Daily Recommendations for ${date}\nSome health improvements needed based on your tracking data.`,
-                    sent_at: new Date().toISOString(),
-                    read: false
-                };
-                
-                // Сохраняем в localStorage
-                const currentNotifications = JSON.parse(localStorage.getItem('health_tracker_notifications') || '[]');
-                currentNotifications.unshift(notification);
-                localStorage.setItem('health_tracker_notifications', JSON.stringify(currentNotifications));
-                
-                return true;
-            } catch (error) {
-                console.error('Error creating notification:', error);
-                return false;
-            }
-        }
-
-        async function saveDayData() {
-            if (!selectedDay) return;
-
-            const dayData = {
-                sleepHours: parseFloat(sleepSlider.value),
-                sleepQuality: getSelectedValue(sleepQualityButtons),
-                waterIntake: getSelectedValue(waterIntakeButtons),
-                mood: parseInt(moodSlider.value),
-                activityLevel: parseInt(activitySlider.value),
-                notes: dayNotes.value,
-                sleepIssues: getSelectedValues(sleepIssuesButtons),
-                dehydrationSymptoms: getSelectedValues(dehydrationButtons),
-                moodRelated: getSelectedValues(moodRelatedButtons),
-                activityIssues: getSelectedValues(activityIssuesButtons),
-                negativeFactors: []
-            };
-
-            const negativeButtons = document.querySelectorAll('.notion-button[data-negative="true"].selected');
-            negativeButtons.forEach(btn => dayData.negativeFactors.push(btn.dataset.value));
-
-            try {
-                const dateStr = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(selectedDay).padStart(2, '0')}`;
-
-                // Сохраняем день
-                if (saveDayToStorage(dateStr, dayData)) {
-                    // Обновляем streak
-                    const streakResult = updateStreakInStorage(dateStr);
-                    
-                    // Создаем уведомление при необходимости
-                    createNotificationForDay(dayData, dateStr);
-
-                    dayModal.style.display = 'none';
-                    document.body.style.overflow = '';
-
-                    await renderCalendar();
-                    await updateStreakDisplay();
-                    await loadHealthScore();
-
-                    let streakMessage = '';
-                    if (streakResult.streakIncremented) {
-                        streakMessage = `Streak: ${streakResult.currentStreak} days!`;
-                    }
-
-                    if (streakMessage) {
-                        showToast(streakMessage);
-                    } else {
-                        showToast('Day saved successfully!');
-                    }
-                } else {
-                    throw new Error('Failed to save day data');
-                }
-            } catch (error) {
-                console.error('Error saving day:', error);
-                showToast('Error: ' + error.message);
-            }
-        }
-
-        // =================== ИНИЦИАЛИЗАЦИЯ ===================
-        document.addEventListener('DOMContentLoaded', function () {
-            // Получаем DOM элементы
-            currentMonthYear = document.getElementById('current-month-year');
-            calendarDays = document.getElementById('calendar-days');
-            dayModal = document.getElementById('day-modal');
-            modalDayTitle = document.getElementById('modal-day-title');
-            closeModal = document.querySelector('.close-modal');
-
-            sleepSlider = document.getElementById('sleep-slider');
-            sleepValueDisplay = document.getElementById('sleep-value');
-            sleepQualityButtons = document.getElementById('sleep-quality-buttons');
-
-            waterIntakeButtons = document.getElementById('water-intake-buttons');
-            moodSlider = document.getElementById('mood-slider');
-            moodValueDisplay = document.getElementById('mood-value');
-            activitySlider = document.getElementById('activity-slider');
-            activityValueDisplay = document.getElementById('activity-value');
-            dayNotes = document.getElementById('day-notes');
-            saveDayBtn = document.getElementById('save-day-btn');
-
-            sleepIssuesSection = document.getElementById('sleep-issues-section');
-            dehydrationSection = document.getElementById('dehydration-section');
-            moodRelatedSection = document.getElementById('mood-related-section');
-            activityIssuesSection = document.getElementById('activity-issues-section');
-
-            sleepIssuesButtons = document.getElementById('sleep-issues-buttons');
-            dehydrationButtons = document.getElementById('dehydration-buttons');
-            moodRelatedButtons = document.getElementById('mood-related-buttons');
-            activityIssuesButtons = document.getElementById('activity-issues-buttons');
-
-            prevMonthBtn = document.getElementById('prev-month');
-            nextMonthBtn = document.getElementById('next-month');
-
-            // Инициализация
-            updateStreakDisplay();
-            renderCalendar();
-            loadHealthScore();
-
-            // Настройка событий
-            closeModal.addEventListener('click', () => {
-                dayModal.style.display = 'none';
-                document.body.style.overflow = '';
-            });
-
-            sleepSlider.addEventListener('input', () => {
-                sleepValueDisplay.textContent = parseFloat(sleepSlider.value).toFixed(1) + ' hrs';
-            });
-
-            moodSlider.addEventListener('input', () => {
-                moodValueDisplay.textContent = moodSlider.value;
-                checkMoodCondition();
-            });
-
-            activitySlider.addEventListener('input', () => {
-                activityValueDisplay.textContent = activitySlider.value;
-                checkActivityCondition();
-            });
-
-            sleepQualityButtons.addEventListener('click', (e) => {
-                handleButtonClick(e, false);
-                checkSleepCondition();
-            });
-
-            waterIntakeButtons.addEventListener('click', (e) => {
-                handleButtonClick(e, false);
-                checkWaterCondition();
-            });
-
-            [sleepIssuesButtons, dehydrationButtons, moodRelatedButtons, activityIssuesButtons]
-                .forEach(group => {
-                    if (group) {
-                        group.addEventListener('click', (e) => handleButtonClick(e, true));
-                    }
-                });
-
-            saveDayBtn.addEventListener('click', async () => {
-                await saveDayData();
-            });
-
-            window.addEventListener('click', (e) => {
-                if (e.target === dayModal) {
-                    dayModal.style.display = 'none';
-                    document.body.style.overflow = '';
-                }
-            });
-
-            prevMonthBtn.addEventListener('click', () => {
-                currentMonth--;
-                if (currentMonth < 0) {
-                    currentMonth = 11;
-                    currentYear--;
-                }
-                renderCalendar();
-            });
-
-            nextMonthBtn.addEventListener('click', () => {
-                currentMonth++;
-                if (currentMonth > 11) {
-                    currentMonth = 0;
-                    currentYear++;
-                }
-                renderCalendar();
-            });
-
-            // Health Score события
-            const healthScoreTitle = document.getElementById('health-score-title');
-            const healthScoreToggle = document.getElementById('health-score-toggle');
-            const healthScoreDetails = document.getElementById('health-score-details');
-
-            if (healthScoreTitle && healthScoreDetails) {
-                const isCollapsed = localStorage.getItem('healthScoreDetailsCollapsed') === 'true';
-                if (isCollapsed) {
-                    healthScoreDetails.classList.add('collapsed');
-                    healthScoreToggle.classList.add('collapsed');
-                }
-
-                healthScoreTitle.addEventListener('click', function () {
-                    const isCollapsed = healthScoreDetails.classList.contains('collapsed');
-                    if (isCollapsed) {
-                        healthScoreDetails.classList.remove('collapsed');
-                        healthScoreToggle.classList.remove('collapsed');
-                        localStorage.setItem('healthScoreDetailsCollapsed', 'false');
-                    } else {
-                        healthScoreDetails.classList.add('collapsed');
-                        healthScoreToggle.classList.add('collapsed');
-                        localStorage.setItem('healthScoreDetailsCollapsed', 'true');
-                    }
-                });
-            }
-
-            // Двойной клик для пересчета Health Score
-            if (healthScoreTitle) {
-                healthScoreTitle.addEventListener('dblclick', () => {
-                    loadHealthScore();
-                    showToast('Health Score recalculated');
-                });
+    } catch (error) {
+        console.error('Error saving day:', error);
+        showToast('Error: ' + error.message);
+    }
+}
+
+// =================== ИНИЦИАЛИЗАЦИЯ ===================
+document.addEventListener('DOMContentLoaded', function () {
+    // Получаем DOM элементы
+    currentMonthYear = document.getElementById('current-month-year');
+    calendarDays = document.getElementById('calendar-days');
+    dayModal = document.getElementById('day-modal');
+    modalDayTitle = document.getElementById('modal-day-title');
+    closeModal = document.querySelector('.close-modal');
+
+    sleepSlider = document.getElementById('sleep-slider');
+    sleepValueDisplay = document.getElementById('sleep-value');
+    sleepQualityButtons = document.getElementById('sleep-quality-buttons');
+
+    waterIntakeButtons = document.getElementById('water-intake-buttons');
+    moodSlider = document.getElementById('mood-slider');
+    moodValueDisplay = document.getElementById('mood-value');
+    activitySlider = document.getElementById('activity-slider');
+    activityValueDisplay = document.getElementById('activity-value');
+    dayNotes = document.getElementById('day-notes');
+    saveDayBtn = document.getElementById('save-day-btn');
+
+    sleepIssuesSection = document.getElementById('sleep-issues-section');
+    dehydrationSection = document.getElementById('dehydration-section');
+    moodRelatedSection = document.getElementById('mood-related-section');
+    activityIssuesSection = document.getElementById('activity-issues-section');
+
+    sleepIssuesButtons = document.getElementById('sleep-issues-buttons');
+    dehydrationButtons = document.getElementById('dehydration-buttons');
+    moodRelatedButtons = document.getElementById('mood-related-buttons');
+    activityIssuesButtons = document.getElementById('activity-issues-buttons');
+
+    prevMonthBtn = document.getElementById('prev-month');
+    nextMonthBtn = document.getElementById('next-month');
+
+    // Инициализация
+    updateStreakDisplay();
+    renderCalendar();
+    loadHealthScore();
+
+    // Настройка событий
+    closeModal.addEventListener('click', () => {
+        dayModal.style.display = 'none';
+        document.body.style.overflow = '';
+    });
+
+    sleepSlider.addEventListener('input', () => {
+        sleepValueDisplay.textContent = parseFloat(sleepSlider.value).toFixed(1) + ' hrs';
+    });
+
+    moodSlider.addEventListener('input', () => {
+        moodValueDisplay.textContent = moodSlider.value;
+        checkMoodCondition();
+    });
+
+    activitySlider.addEventListener('input', () => {
+        activityValueDisplay.textContent = activitySlider.value;
+        checkActivityCondition();
+    });
+
+    sleepQualityButtons.addEventListener('click', (e) => {
+        handleButtonClick(e, false);
+        checkSleepCondition();
+    });
+
+    waterIntakeButtons.addEventListener('click', (e) => {
+        handleButtonClick(e, false);
+        checkWaterCondition();
+    });
+
+    [sleepIssuesButtons, dehydrationButtons, moodRelatedButtons, activityIssuesButtons]
+        .forEach(group => {
+            if (group) {
+                group.addEventListener('click', (e) => handleButtonClick(e, true));
             }
         });
+
+    saveDayBtn.addEventListener('click', async () => {
+        await saveDayData();
+    });
+
+    window.addEventListener('click', (e) => {
+        if (e.target === dayModal) {
+            dayModal.style.display = 'none';
+            document.body.style.overflow = '';
+        }
+    });
+
+    prevMonthBtn.addEventListener('click', () => {
+        currentMonth--;
+        if (currentMonth < 0) {
+            currentMonth = 11;
+            currentYear--;
+        }
+        renderCalendar();
+    });
+
+    nextMonthBtn.addEventListener('click', () => {
+        currentMonth++;
+        if (currentMonth > 11) {
+            currentMonth = 0;
+            currentYear++;
+        }
+        renderCalendar();
+    });
+
+    // Health Score события
+    const healthScoreTitle = document.getElementById('health-score-title');
+    const healthScoreToggle = document.getElementById('health-score-toggle');
+    const healthScoreDetails = document.getElementById('health-score-details');
+
+    if (healthScoreTitle && healthScoreDetails) {
+        const isCollapsed = localStorage.getItem('healthScoreDetailsCollapsed') === 'true';
+        if (isCollapsed) {
+            healthScoreDetails.classList.add('collapsed');
+            healthScoreToggle.classList.add('collapsed');
+        }
+
+        healthScoreTitle.addEventListener('click', function () {
+            const isCollapsed = healthScoreDetails.classList.contains('collapsed');
+            if (isCollapsed) {
+                healthScoreDetails.classList.remove('collapsed');
+                healthScoreToggle.classList.remove('collapsed');
+                localStorage.setItem('healthScoreDetailsCollapsed', 'false');
+            } else {
+                healthScoreDetails.classList.add('collapsed');
+                healthScoreToggle.classList.add('collapsed');
+                localStorage.setItem('healthScoreDetailsCollapsed', 'true');
+            }
+        });
+    }
+
+    // Двойной клик для пересчета Health Score
+    if (healthScoreTitle) {
+        healthScoreTitle.addEventListener('dblclick', () => {
+            loadHealthScore();
+            showToast('Health Score recalculated');
+        });
+    }
+});
     </script>
+    
 </body>
 </html>
+
 
