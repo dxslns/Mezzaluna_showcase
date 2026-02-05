@@ -17,24 +17,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
     <style>
-
-        /* Предотвращение масштабирования на мобильных */
-html {
-  touch-action: manipulation;
-}
-
-/* Принудительная портретная ориентация */
-@media screen and (min-width: 320px) and (max-width: 767px) and (orientation: landscape) {
-  html {
-    transform: rotate(-90deg);
-    transform-origin: left top;
-    width: 100vh;
-    height: 100vw;
-    position: absolute;
-    top: 100%;
-    left: 0;
-  }
-}
         :root {
             --primary-color: #2E7D32;
             --secondary-color: #4CAF50;
@@ -876,6 +858,22 @@ html {
     </div>
 
     <script>
+        // Блокировка ориентации
+if (screen.orientation && screen.orientation.lock) {
+  screen.orientation.lock('portrait').catch(() => {
+    console.log('Блокировка ориентации не поддерживается');
+  });
+}
+
+// Или слушатель изменения ориентации
+window.addEventListener('orientationchange', function() {
+  if (Math.abs(window.orientation) === 90) {
+    alert('Пожалуйста, используйте портретную ориентацию');
+  }
+});
+    </script>
+
+    <script>
         let hasScrolled = false;
 
         function searchFunction() {
@@ -1257,6 +1255,7 @@ html {
     </script>
 </body>
 </html>
+
 
 
 
