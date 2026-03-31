@@ -2,25 +2,15 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
     <title>Mezzaluna - water tracker</title>
     <link rel="icon" href="PNGs/favicon5.ico">
     <style>
-        :root {
-            --primary: #00a8ff;
-            --secondary: #0097e6;
-            --background: #f5f6fa;
-            --card: #ffffff;
-            --text: #2f3640;
-            --text-light: #7f8fa6;
-            --progress: linear-gradient(90deg, #00a8ff, #00d2d3);
-        }
-
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif;
+            font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, sans-serif;
         }
 
         body {
@@ -28,214 +18,362 @@
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
+            background-attachment: fixed;
             min-height: 100vh;
-            padding-bottom: 80px;
+            padding-bottom: 100px;
         }
 
         .container {
             max-width: 500px;
             margin: 0 auto;
-            padding: 20px;
+            padding: 20px 16px 32px;
         }
 
+        /* Шапка */
         header {
             display: flex;
             justify-content: space-between;
-            align-items: center;
-            margin-bottom: 30px;
+            align-items: baseline;
+            margin-bottom: 24px;
         }
 
         h1 {
-            font-size: 24px;
+            font-size: 28px;
             font-weight: 700;
+            background: linear-gradient(135deg, #1e2a3a, #0f172a);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            letter-spacing: -0.3px;
         }
 
         .settings-btn {
-            background: none;
+            background: rgba(255, 255, 255, 0.75);
+            backdrop-filter: blur(4px);
             border: none;
-            font-size: 20px;
-            color: var(--text);
+            padding: 8px 18px;
+            border-radius: 40px;
+            font-weight: 600;
+            font-size: 14px;
+            color: #0077b6;
             cursor: pointer;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+            transition: all 0.2s;
         }
 
+            .settings-btn:active {
+                transform: scale(0.96);
+                background: white;
+            }
+
+        /* навигационные кнопки */
         .nav-button {
             display: block;
             width: 100%;
-            background: var(--primary);
-            color: white;
-            border: none;
-            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(8px);
+            color: #0077b6;
+            border: 1px solid rgba(0,168,255,0.2);
+            border-radius: 28px;
             padding: 12px;
             font-size: 16px;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.2s;
-            box-shadow: 0 4px 12px rgba(0, 168, 255, 0.2);
             text-align: center;
-            margin-bottom: 15px;
+            margin-bottom: 14px;
             text-decoration: none;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.03);
         }
 
             .nav-button:hover {
-                background: var(--secondary);
+                background: white;
+                border-color: #00a8ff;
             }
 
             .nav-button:active {
-                transform: scale(0.96);
-                box-shadow: 0 2px 6px rgba(0, 168, 255, 0.3);
+                transform: scale(0.97);
             }
 
+        /* ГЛАВНАЯ КАРТОЧКА (вода + прогресс) */
         .water-card {
-            background: var(--card);
-            border-radius: 20px;
-            padding: 25px;
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-            margin-bottom: 30px;
+            background: rgba(255, 255, 255, 0.96);
+            backdrop-filter: blur(0px);
+            border-radius: 36px;
+            padding: 28px 22px;
+            box-shadow: 0 20px 35px -12px rgba(0, 0, 0, 0.2), 0 1px 3px rgba(0,0,0,0.05);
+            margin-bottom: 28px;
             position: relative;
             overflow: hidden;
+            transition: transform 0.2s ease;
+            border: 1px solid rgba(255,255,255,0.6);
         }
 
+        /* водяная волна */
         .water-wave {
             position: absolute;
             bottom: 0;
             left: 0;
             width: 100%;
             height: 0;
-            background: var(--primary);
-            transition: height 0.8s cubic-bezier(0.25, 0.1, 0.25, 1);
+            background: linear-gradient(135deg, #00c6ff, #0072ff);
+            transition: height 0.7s cubic-bezier(0.2, 0.9, 0.4, 1.1);
             z-index: 0;
+            opacity: 0.2;
+            border-radius: 0 0 36px 36px;
         }
 
         .water-content {
             position: relative;
-            z-index: 1;
+            z-index: 2;
         }
 
         .progress-text {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 15px;
+            align-items: baseline;
+            margin-bottom: 18px;
+            flex-wrap: wrap;
         }
 
         .current-amount {
-            font-size: 32px;
-            font-weight: 700;
+            font-size: 38px;
+            font-weight: 800;
+            background: linear-gradient(145deg, #0b2b3b, #0066a0);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            letter-spacing: -0.5px;
         }
 
         .target-amount {
-            color: black;
+            color: #2c3e50;
             font-size: 16px;
-            display: flex;
-            align-items: flex-end;
+            font-weight: 500;
+            background: rgba(0,168,255,0.1);
+            padding: 4px 12px;
+            border-radius: 40px;
         }
 
         .progress-bar {
-            height: 12px;
-            background: #e0e0e0;
-            border-radius: 6px;
+            height: 14px;
+            background: #e2e8f0;
+            border-radius: 20px;
             overflow: hidden;
-            margin-bottom: 25px;
+            margin: 12px 0 20px;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
         }
 
         .progress-fill {
             height: 100%;
-            background: var(--progress);
-            border-radius: 6px;
-            width: 0;
-            transition: width 0.6s ease-out;
+            background: linear-gradient(90deg, #00a8ff, #00d2d3, #2ecc71);
+            border-radius: 20px;
+            width: 0%;
+            transition: width 0.5s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+            box-shadow: 0 0 6px #00d2d3;
         }
 
         .water-goal {
-            font-size: 14px;
-            color: black;
+            font-size: 15px;
+            font-weight: 500;
+            color: #1e293b;
             text-align: center;
-            margin-bottom: 20px;
+            background: #f1f5f9;
+            padding: 8px 12px;
+            border-radius: 80px;
+            margin-bottom: 24px;
+            display: inline-block;
+            width: auto;
+            margin-left: auto;
+            margin-right: auto;
         }
 
         .quick-add {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            gap: 10px;
-            margin-bottom: 25px;
+            gap: 12px;
+            margin-top: 8px;
         }
 
         .add-btn {
-            background: var(--primary);
+            background: linear-gradient(125deg, #0099e6, #0077b3);
             color: white;
             border: none;
-            border-radius: 12px;
-            padding: 12px;
-            font-size: 16px;
-            font-weight: 600;
+            border-radius: 40px;
+            padding: 12px 6px;
+            font-size: 15px;
+            font-weight: 700;
             cursor: pointer;
-            transition: all 0.2s;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.7), inset 0 -2px 2px rgba(0, 0, 0, 0.1);
-            text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
+            transition: all 0.15s;
+            box-shadow: 0 8px 16px -8px rgba(0, 120, 200, 0.4);
+            letter-spacing: 0.3px;
         }
 
             .add-btn:active {
-                transform: scale(0.96) translateY(1px);
-                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+                transform: scale(0.94);
+                box-shadow: 0 2px 6px rgba(0,0,0,0.2);
             }
 
-        .history-title {
-            font-size: 18px;
-            font-weight: 600;
-            margin-bottom: 15px;
+        /* БЛОК ИСТОРИИ — БЕЛЫЕ КАРТОЧКИ (аналогично water-card) */
+        .history-section {
+            margin-top: 16px;
         }
 
-        .history-item {
+        .history-card {
+            background: rgba(255, 255, 255, 0.96);
+            backdrop-filter: blur(0px);
+            border-radius: 32px;
+            padding: 20px 18px;
+            box-shadow: 0 12px 28px -10px rgba(0, 0, 0, 0.12);
+            margin-bottom: 24px;
+            border: 1px solid rgba(255,255,240,0.8);
+            transition: all 0.2s;
+        }
+
+        .history-header {
             display: flex;
             justify-content: space-between;
-            padding: 15px 0;
-            border-bottom: 1px solid #eee;
+            align-items: baseline;
+            border-bottom: 2px solid #eef2ff;
+            padding-bottom: 12px;
+            margin-bottom: 12px;
+        }
+
+            .history-header h3 {
+                font-size: 20px;
+                font-weight: 700;
+                background: linear-gradient(135deg, #0f2b3d, #0080b0);
+                background-clip: text;
+                -webkit-background-clip: text;
+                color: transparent;
+                letter-spacing: -0.2px;
+            }
+
+        .clear-history-btn {
+            background: none;
+            border: none;
+            font-size: 13px;
+            color: #e67e22;
+            font-weight: 600;
+            padding: 4px 12px;
+            border-radius: 30px;
+            background: #fff0e6;
+            cursor: pointer;
+            transition: 0.1s;
+        }
+
+            .clear-history-btn:active {
+                transform: scale(0.96);
+                background: #ffe0cc;
+            }
+
+        /* Группировка дат внутри карточки */
+        .history-group {
+            margin-bottom: 22px;
+        }
+
+        .history-date-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: #1e4a6e;
+            background: #eef6ff;
+            display: inline-block;
+            padding: 4px 16px;
+            border-radius: 30px;
+            margin-bottom: 12px;
+            letter-spacing: -0.2px;
+        }
+
+        .history-items-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        /* каждая запись в истории — стилизованный элемент */
+        .history-item-card {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #ffffff;
+            border-radius: 24px;
+            padding: 12px 18px;
+            transition: 0.1s;
+            border: 1px solid #eef2ff;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.02);
         }
 
         .history-time {
-            color: var(--text-light);
-            font-size: 14px;
+            font-weight: 500;
+            color: #2c3e50;
+            background: #f0f9ff;
+            padding: 4px 12px;
+            border-radius: 30px;
+            font-size: 13px;
         }
 
         .history-amount {
-            font-weight: 600;
+            font-weight: 800;
+            font-size: 18px;
+            background: linear-gradient(125deg, #0088cc, #00b4aa);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            margin-right: 12px;
         }
 
         .undo-btn {
-            color: var(--primary);
-            background: none;
+            background: #f1f5f9;
             border: none;
-            font-size: 14px;
+            padding: 6px 16px;
+            border-radius: 40px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #e67e22;
             cursor: pointer;
-            margin-left: 10px;
-            padding: 2px 6px;
-            border-radius: 4px;
+            transition: all 0.15s;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
         }
 
-            .undo-btn:hover {
-                background: rgba(0, 168, 255, 0.1);
+            .undo-btn:active {
+                background: #ffe0cc;
+                transform: scale(0.94);
             }
 
+        .empty-history {
+            text-align: center;
+            padding: 36px 20px;
+            color: #5f7f9e;
+            font-weight: 500;
+            background: #fafcff;
+            border-radius: 28px;
+            font-size: 15px;
+        }
+
+        /* FAB и модалки */
         .fab {
             position: fixed;
-            bottom: 30px;
-            right: 30px;
+            bottom: 28px;
+            right: 28px;
             width: 60px;
             height: 60px;
-            background: var(--primary);
+            background: linear-gradient(145deg, #00a8ff, #0080cc);
             border-radius: 50%;
             display: flex;
             justify-content: center;
             align-items: center;
             color: white;
-            font-size: 24px;
-            box-shadow: 0 8px 25px rgba(0, 168, 255, 0.4);
+            font-size: 32px;
+            font-weight: 400;
+            box-shadow: 0 12px 22px rgba(0, 120, 200, 0.5);
             cursor: pointer;
-            transition: all 0.3s;
+            transition: all 0.2s;
             border: none;
+            z-index: 99;
         }
 
             .fab:active {
-                transform: scale(0.9);
+                transform: scale(0.88);
             }
 
         .modal {
@@ -245,13 +383,14 @@
             width: 100%;
             height: 100%;
             background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(5px);
             display: flex;
             justify-content: center;
             align-items: center;
             opacity: 0;
             pointer-events: none;
-            transition: opacity 0.3s;
-            z-index: 100;
+            transition: opacity 0.25s;
+            z-index: 200;
         }
 
             .modal.active {
@@ -263,10 +402,11 @@
             background: white;
             width: 85%;
             max-width: 350px;
-            border-radius: 20px;
-            padding: 25px;
-            transform: translateY(20px);
-            transition: transform 0.3s;
+            border-radius: 40px;
+            padding: 28px 24px;
+            transform: translateY(16px);
+            transition: transform 0.25s;
+            box-shadow: 0 30px 40px rgba(0,0,0,0.3);
         }
 
         .modal.active .modal-content {
@@ -274,74 +414,81 @@
         }
 
         .modal-title {
-            font-size: 20px;
-            font-weight: 600;
+            font-size: 24px;
+            font-weight: 700;
             margin-bottom: 20px;
+            color: #0f2b3d;
         }
 
         .input-group {
-            margin-bottom: 20px;
+            margin-bottom: 24px;
         }
 
             .input-group label {
                 display: block;
                 margin-bottom: 8px;
-                font-size: 14px;
-                color: var(--text-light);
+                font-weight: 500;
+                color: #2c3e50;
             }
 
             .input-group input {
                 width: 100%;
-                padding: 12px 15px;
-                border: 1px solid #ddd;
-                border-radius: 12px;
+                padding: 14px 16px;
+                border: 1.5px solid #dce4ec;
+                border-radius: 34px;
                 font-size: 16px;
+                transition: 0.2s;
             }
+
+                .input-group input:focus {
+                    outline: none;
+                    border-color: #00a8ff;
+                    box-shadow: 0 0 0 3px rgba(0,168,255,0.2);
+                }
 
         .modal-actions {
             display: flex;
             justify-content: flex-end;
-            gap: 10px;
+            gap: 12px;
         }
 
         .modal-btn {
             padding: 10px 20px;
-            border-radius: 10px;
-            font-size: 16px;
-            font-weight: 500;
-            cursor: pointer;
+            border-radius: 40px;
+            font-weight: 600;
             border: none;
+            cursor: pointer;
         }
 
         .cancel-btn {
-            background: #f5f6fa;
-            color: var(--text);
+            background: #eef2f5;
+            color: #2d4a6e;
         }
 
         .save-btn {
-            background: var(--primary);
+            background: #00a8ff;
             color: white;
         }
 
+        /* Конфетти */
         .confetti {
-            position: absolute;
-            width: 10px;
-            height: 10px;
-            background-color: var(--primary);
-            opacity: 0;
+            position: fixed;
+            pointer-events: none;
+            z-index: 1000;
         }
     </style>
 </head>
 <body>
     <div class="container">
         <header>
-            <h1>Water tracker</h1>
-            <button class="settings-btn">Set Goal</button>
+            <h1>💧 Water tracker</h1>
+            <button class="settings-btn">🎯 Set Goal</button>
         </header>
 
-        <a href="./WatnHydr.html" class="nav-button">Water and Hydration</a>
-        <a href="./water.html" class="nav-button">Water Page</a>
+        <a href="./WatnHydr.html" class="nav-button">💧 Water and Hydration</a>
+        <a href="./water.html" class="nav-button">🌊 Water Page</a>
 
+        <!-- основная карточка с прогрессом -->
         <div class="water-card">
             <div class="water-wave"></div>
             <div class="water-content">
@@ -352,29 +499,31 @@
                 <div class="progress-bar">
                     <div class="progress-fill"></div>
                 </div>
-                <div class="water-goal">You are on 0% of your daily goal!</div>
+                <div class="water-goal">✨ You are on 0% of your daily goal!</div>
                 <div class="quick-add">
                     <button class="add-btn" data-amount="100">+100 ml</button>
                     <button class="add-btn" data-amount="250">+250 ml</button>
                     <button class="add-btn" data-amount="500">+500 ml</button>
-                    <button class="add-btn" data-amount="1000">+1 l</button>
+                    <button class="add-btn" data-amount="1000">+1 L</button>
                 </div>
             </div>
         </div>
 
-        <div class="history-list">
-            <!-- History will be added here -->
+        <!-- НОВАЯ ИСТОРИЯ: белая карточка, как water-card -->
+        <div class="history-section" id="historySection">
+            <!-- сюда динамически будет вставляться карточка истории -->
         </div>
     </div>
 
     <button class="fab">+</button>
 
+    <!-- модалка добавления воды -->
     <div class="modal" id="addWaterModal">
         <div class="modal-content">
-            <div class="modal-title">Add water</div>
+            <div class="modal-title">💧 Add water</div>
             <div class="input-group">
                 <label for="amount">Amount (ml)</label>
-                <input type="number" id="amount" placeholder="For example: 300">
+                <input type="number" id="amount" placeholder="e.g., 300" autocomplete="off">
             </div>
             <div class="modal-actions">
                 <button class="modal-btn cancel-btn" id="cancelAddWater">Cancel</button>
@@ -383,12 +532,13 @@
         </div>
     </div>
 
+    <!-- модалка настроек цели -->
     <div class="modal" id="settingsModal">
         <div class="modal-content">
-            <div class="modal-title">Settings</div>
+            <div class="modal-title">⚙️ Daily goal</div>
             <div class="input-group">
-                <label for="daily-goal">Daily water goal (ml)</label>
-                <input type="number" id="daily-goal" placeholder="For example: 3000">
+                <label for="daily-goal">Daily water target (ml)</label>
+                <input type="number" id="daily-goal" placeholder="e.g., 3000" autocomplete="off">
             </div>
             <div class="modal-actions">
                 <button class="modal-btn cancel-btn" id="cancelSettings">Cancel</button>
@@ -398,14 +548,14 @@
     </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            // Elements
+        (function() {
+            // DOM элементы
             const currentAmountEl = document.querySelector('.current-amount');
             const targetAmountEl = document.querySelector('.target-amount');
             const progressFillEl = document.querySelector('.progress-fill');
             const waterGoalEl = document.querySelector('.water-goal');
             const waterWaveEl = document.querySelector('.water-wave');
-            const historyListEl = document.querySelector('.history-list');
+            const historySection = document.getElementById('historySection');
             const addButtons = document.querySelectorAll('.add-btn');
             const fab = document.querySelector('.fab');
             const addWaterModal = document.getElementById('addWaterModal');
@@ -418,289 +568,306 @@
             const cancelSettingsBtn = document.getElementById('cancelSettings');
             const saveSettingsBtn = document.getElementById('saveSettings');
 
-            // Settings
-            let targetAmount = localStorage.getItem('waterTargetAmount') ?
-                parseInt(localStorage.getItem('waterTargetAmount')) : 5000;
-            let currentAmount = localStorage.getItem('waterCurrentAmount') ?
-                parseInt(localStorage.getItem('waterCurrentAmount')) : 0;
-            let history = localStorage.getItem('waterHistory') ?
-                JSON.parse(localStorage.getItem('waterHistory')) : [];
+            // ----- Данные -----
+            let targetAmount = localStorage.getItem('waterTargetAmount') ? parseInt(localStorage.getItem('waterTargetAmount')) : 5000;
+            let currentAmount = localStorage.getItem('waterCurrentAmount') ? parseInt(localStorage.getItem('waterCurrentAmount')) : 0;
+            let history = localStorage.getItem('waterHistory') ? JSON.parse(localStorage.getItem('waterHistory')) : [];
             let lastUpdateDate = localStorage.getItem('waterLastUpdateDate');
 
-            // Check if it's a new day
-            const today = new Date().toLocaleDateString();
-            if (lastUpdateDate !== today) {
-                // New day - reset counter
+            const todayStr = new Date().toLocaleDateString('ru-RU');
+
+            // Сброс дня (если новый день)
+            if (lastUpdateDate !== todayStr) {
                 currentAmount = 0;
                 localStorage.setItem('waterCurrentAmount', currentAmount);
-                localStorage.setItem('waterLastUpdateDate', today);
-
-                // Clear history older than 7 days
+                localStorage.setItem('waterLastUpdateDate', todayStr);
+                cleanOldHistory();
+            } else {
+                // все равно почистить старую историю при загрузке
                 cleanOldHistory();
             }
 
-            // Clear old history (older than 7 days)
             function cleanOldHistory() {
                 const sevenDaysAgo = new Date();
                 sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
-
+                const initialLength = history.length;
                 history = history.filter(item => {
-                    const itemDate = new Date(item.date);
+                    if (!item.date) return false;
+                    const parts = item.date.split('.');
+                    if (parts.length !== 3) return true;
+                    const itemDate = new Date(`${parts[1]}.${parts[0]}.${parts[2]}`);
                     return itemDate >= sevenDaysAgo;
                 });
-
-                localStorage.setItem('waterHistory', JSON.stringify(history));
+                if (history.length !== initialLength) {
+                    localStorage.setItem('waterHistory', JSON.stringify(history));
+                }
             }
 
-            // Update UI
-            function updateUI() {
-                const percentage = Math.min(Math.round((currentAmount / targetAmount) * 100), 100);
+            // Вспомогательные функции
+            function formatDateHeader(dateString) {
+                const today = new Date().toLocaleDateString('ru-RU');
+                const yesterdayDate = new Date();
+                yesterdayDate.setDate(yesterdayDate.getDate() - 1);
+                const yesterdayStr = yesterdayDate.toLocaleDateString('ru-RU');
 
+                if (dateString === today) return "📅 Today";
+                if (dateString === yesterdayStr) return "📆 Yesterday";
+
+                try {
+                    const parts = dateString.split('.');
+                    if (parts.length === 3) {
+                        const dateObj = new Date(`${parts[1]}.${parts[0]}.${parts[2]}`);
+                        return dateObj.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long' });
+                    }
+                } catch(e) {}
+                return dateString;
+            }
+
+            // обновление UI (прогресс, волна)
+            function updateUI() {
+                let percentage = (currentAmount / targetAmount) * 100;
+                percentage = Math.min(Math.round(percentage), 100);
                 currentAmountEl.textContent = `${currentAmount} ml`;
                 targetAmountEl.textContent = `of ${targetAmount} ml`;
                 progressFillEl.style.width = `${percentage}%`;
-                waterGoalEl.textContent = `You are on ${percentage}% of your daily goal!`;
+                waterGoalEl.textContent = `💙 You are on ${percentage}% of your daily goal!`;
 
-                // Wave animation
-                const waveHeight = Math.min((currentAmount / targetAmount) * 100, 100);
-                waterWaveEl.style.height = `${waveHeight}%`;
+                const wavePercent = Math.min((currentAmount / targetAmount) * 100, 100);
+                waterWaveEl.style.height = `${wavePercent}%`;
 
-                if (currentAmount >= targetAmount) {
+                if (currentAmount >= targetAmount && currentAmount > 0) {
                     celebrate();
                 }
             }
 
-            // Add water entry
+            // отрисовка истории в виде белой карточки
+            function renderHistoryAsCard() {
+                if (!historySection) return;
+
+                // Группировка по датам (сортировка: сначала новые)
+                const groups = {};
+                history.forEach(entry => {
+                    const d = entry.date || new Date().toLocaleDateString('ru-RU');
+                    if (!groups[d]) groups[d] = [];
+                    groups[d].push(entry);
+                });
+
+                const sortedDates = Object.keys(groups).sort((a,b) => {
+                    const parseDate = (dStr) => {
+                        const parts = dStr.split('.');
+                        if (parts.length === 3) return new Date(`${parts[1]}.${parts[0]}.${parts[2]}`);
+                        return new Date(0);
+                    };
+                    return parseDate(b) - parseDate(a);
+                });
+
+                if (sortedDates.length === 0) {
+                    historySection.innerHTML = `
+                        <div class="history-card">
+                            <div class="history-header">
+                                <h3>📋 Drink log</h3>
+                                <button class="clear-history-btn" id="clearHistoryBtn" style="opacity:0.6; pointer-events:none;">Clear</button>
+                            </div>
+                            <div class="empty-history">
+                                💧 No records yet.<br> Tap + to add your first glass!
+                            </div>
+                        </div>
+                    `;
+                    return;
+                }
+
+                let historyHTML = `
+                    <div class="history-card">
+                        <div class="history-header">
+                            <h3>📋 Hydration history</h3>
+                            <button class="clear-history-btn" id="clearHistoryBtn">🗑️ Clear all</button>
+                        </div>
+                `;
+
+                for (let date of sortedDates) {
+                    const entries = groups[date];
+                    const displayDate = formatDateHeader(date);
+                    historyHTML += `
+                        <div class="history-group">
+                            <div class="history-date-title">${displayDate}</div>
+                            <div class="history-items-list">
+                    `;
+                    entries.forEach((entry, idx) => {
+                        // Находим глобальный индекс для undo
+                        const globalIndex = history.findIndex(e => e.time === entry.time && e.amount === entry.amount && e.date === entry.date);
+                        historyHTML += `
+                            <div class="history-item-card" data-global-index="${globalIndex}">
+                                <div class="history-time">⏱️ ${entry.time || '—'}</div>
+                                <div style="display: flex; align-items: center; gap: 8px;">
+                                    <span class="history-amount">+${entry.amount} ml</span>
+                                    <button class="undo-btn" data-undo-index="${globalIndex}">↩️ Undo</button>
+                                </div>
+                            </div>
+                        `;
+                    });
+                    historyHTML += `</div></div>`;
+                }
+
+                historyHTML += `</div>`;
+                historySection.innerHTML = historyHTML;
+
+                // навесить обработчики на кнопки Undo
+                document.querySelectorAll('.undo-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        const idxAttr = btn.getAttribute('data-undo-index');
+                        if (idxAttr !== null && !isNaN(parseInt(idxAttr))) {
+                            undoEntry(parseInt(idxAttr));
+                        }
+                    });
+                });
+
+                const clearBtn = document.getElementById('clearHistoryBtn');
+                if (clearBtn) {
+                    clearBtn.addEventListener('click', () => {
+                        if (confirm('⚠️ Delete entire drinking history? This action cannot be undone.')) {
+                            clearFullHistory();
+                        }
+                    });
+                }
+            }
+
+            function clearFullHistory() {
+                history = [];
+                localStorage.setItem('waterHistory', JSON.stringify(history));
+                // Не сбрасываем currentAmount для сегодняшнего дня? по логике лучше сбросить текущее потребление? Но обычно удаление истории отменяет все записи
+                currentAmount = 0;
+                localStorage.setItem('waterCurrentAmount', currentAmount);
+                updateUI();
+                renderHistoryAsCard();
+                // также сохраняем дату обновления, чтобы не ломать день
+                const todayDate = new Date().toLocaleDateString('ru-RU');
+                localStorage.setItem('waterLastUpdateDate', todayDate);
+            }
+
+            // Добавление воды
             function addWater(amount) {
                 if (amount <= 0) return;
-
                 currentAmount += amount;
                 const now = new Date();
-                const today = now.toLocaleDateString();
+                const todayDate = now.toLocaleDateString('ru-RU');
+                localStorage.setItem('waterLastUpdateDate', todayDate);
 
-                // Update last update date
-                localStorage.setItem('waterLastUpdateDate', today);
-
-                const timeString = now.toLocaleTimeString('ru-RU', {
-                    hour: '2-digit',
-                    minute: '2-digit'
-                });
-
-                history.unshift({
+                const timeString = now.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
+                const newEntry = {
                     amount: amount,
                     time: timeString,
-                    date: today
-                });
+                    date: todayDate,
+                    timestamp: now.getTime()
+                };
+                history.unshift(newEntry);
+                // ограничим историю максимум 150 записей, чтобы не раздувать
+                if (history.length > 200) history = history.slice(0, 200);
 
                 localStorage.setItem('waterCurrentAmount', currentAmount);
                 localStorage.setItem('waterHistory', JSON.stringify(history));
 
                 updateUI();
-                updateHistory();
+                renderHistoryAsCard();
+                if (currentAmount >= targetAmount) celebrate();
             }
 
-            // Update history grouped by days
-            function updateHistory() {
-                historyListEl.innerHTML = '';
-
-                if (history.length === 0) {
-                    historyListEl.innerHTML = '<div style="color: var(--text-light); text-align: center;">No records yet</div>';
-                    return;
-                }
-
-                // Group entries by date
-                const groupedHistory = {};
-                history.forEach(item => {
-                    if (!groupedHistory[item.date]) {
-                        groupedHistory[item.date] = [];
-                    }
-                    groupedHistory[item.date].push(item);
-                });
-
-                // Display groups
-                for (const date in groupedHistory) {
-                    const dateHeader = document.createElement('div');
-                    dateHeader.className = 'history-title';
-
-                    // Format date for display
-                    const displayDate = formatDisplayDate(date);
-                    dateHeader.textContent = displayDate;
-
-                    historyListEl.appendChild(dateHeader);
-
-                    // Add entries for this date
-                    groupedHistory[date].forEach(item => {
-                        const historyItem = document.createElement('div');
-                        historyItem.className = 'history-item';
-                        historyItem.innerHTML = `
-                                <div class="history-time">${item.time}</div>
-                                <div>
-                                    <span class="history-amount">+${item.amount} ml</span>
-                                    <button class="undo-btn" data-index="${history.indexOf(item)}">Undo</button>
-                                </div>
-                            `;
-                        historyListEl.appendChild(historyItem);
-                    });
-                }
+            // Отмена записи
+            function undoEntry(index) {
+                if (index < 0 || index >= history.length) return;
+                const entry = history[index];
+                if (!entry) return;
+                currentAmount -= entry.amount;
+                if (currentAmount < 0) currentAmount = 0;
+                history.splice(index, 1);
+                localStorage.setItem('waterCurrentAmount', currentAmount);
+                localStorage.setItem('waterHistory', JSON.stringify(history));
+                updateUI();
+                renderHistoryAsCard();
             }
 
-            // Format date for display
-            function formatDisplayDate(dateString) {
-                const today = new Date().toLocaleDateString();
-                const yesterday = new Date();
-                yesterday.setDate(yesterday.getDate() - 1);
-                const yesterdayString = yesterday.toLocaleDateString();
-
-                if (dateString === today) {
-                    return 'Today';
-                } else if (dateString === yesterdayString) {
-                    return 'Yesterday';
-                } else {
-                    try {
-                        const dateParts = dateString.split('.');
-                        if (dateParts.length === 3) {
-                            const date = new Date(`${dateParts[1]}.${dateParts[0]}.${dateParts[2]}`);
-                            return date.toLocaleDateString('en-US', {
-                                weekday: 'long',
-                                month: 'long',
-                                day: 'numeric'
-                            });
-                        } else {
-                            return dateString;
-                        }
-                    } catch (e) {
-                        return dateString;
-                    }
-                }
-            }
-
-            // Celebration for goal achievement
+            // Конфетти
             function celebrate() {
-                for (let i = 0; i < 50; i++) {
-                    createConfetti();
+                for (let i = 0; i < 55; i++) {
+                    createConfettiPiece();
                 }
             }
 
-            function createConfetti() {
-                const confetti = document.createElement('div');
-                confetti.className = 'confetti';
-
-                // Random properties
-                const size = Math.random() * 10 + 5;
-                const color = `hsl(${Math.random() * 360}, 100%, 50%)`;
+            function createConfettiPiece() {
+                const conf = document.createElement('div');
+                conf.classList.add('confetti');
+                const size = Math.random() * 10 + 6;
+                const color = `hsl(${Math.random() * 360}, 85%, 60%)`;
                 const left = Math.random() * window.innerWidth;
-                const animationDuration = Math.random() * 3 + 2;
+                const duration = Math.random() * 2.5 + 1.5;
+                conf.style.width = `${size}px`;
+                conf.style.height = `${size}px`;
+                conf.style.backgroundColor = color;
+                conf.style.left = `${left}px`;
+                conf.style.top = '-10px';
+                conf.style.borderRadius = '50%';
+                conf.style.position = 'fixed';
+                conf.style.opacity = '0.9';
+                document.body.appendChild(conf);
 
-                confetti.style.width = `${size}px`;
-                confetti.style.height = `${size}px`;
-                confetti.style.backgroundColor = color;
-                confetti.style.left = `${left}px`;
-                confetti.style.top = '-10px';
-                confetti.style.borderRadius = '50%';
-                confetti.style.position = 'fixed';
-                confetti.style.opacity = '1';
-                confetti.style.zIndex = '1000';
-
-                document.body.appendChild(confetti);
-
-                const animation = confetti.animate([
-                    { transform: 'translateY(0) rotate(0deg)', opacity: 1 },
+                const anim = conf.animate([
+                    { transform: 'translateY(0) rotate(0deg)', opacity: 0.9 },
                     { transform: `translateY(${window.innerHeight}px) rotate(${Math.random() * 360}deg)`, opacity: 0 }
-                ], {
-                    duration: animationDuration * 1000,
-                    easing: 'cubic-bezier(0.1, 0.8, 0.3, 1)'
-                });
+                ], { duration: duration * 1000, easing: 'cubic-bezier(0.2, 0.9, 0.5, 1)' });
 
-                animation.onfinish = () => {
-                    document.body.removeChild(confetti);
-                };
+                anim.onfinish = () => conf.remove();
             }
 
-            // Event listeners for add water buttons
-            addButtons.forEach(button => {
-                button.addEventListener('click', () => {
-                    const amount = parseInt(button.getAttribute('data-amount'));
-                    addWater(amount);
-                });
-            });
-
-            // Event listeners for add water modal
+            // обработчики модалок
             fab.addEventListener('click', () => {
                 addWaterModal.classList.add('active');
+                amountInput.value = '';
                 amountInput.focus();
             });
-
-            cancelAddWaterBtn.addEventListener('click', () => {
-                addWaterModal.classList.remove('active');
-            });
-
+            cancelAddWaterBtn.addEventListener('click', () => addWaterModal.classList.remove('active'));
             saveAddWaterBtn.addEventListener('click', () => {
-                const amount = parseInt(amountInput.value);
-                if (!isNaN(amount) && amount > 0) {
-                    addWater(amount);
+                const val = parseInt(amountInput.value);
+                if (!isNaN(val) && val > 0) {
+                    addWater(val);
                     amountInput.value = '';
                     addWaterModal.classList.remove('active');
+                } else {
+                    alert('Please enter a valid amount (ml)');
                 }
             });
+            addWaterModal.addEventListener('click', (e) => { if (e.target === addWaterModal) addWaterModal.classList.remove('active'); });
 
-            addWaterModal.addEventListener('click', (e) => {
-                if (e.target === addWaterModal) {
-                    addWaterModal.classList.remove('active');
-                }
-            });
-
-            // Event listeners for settings modal
             settingsBtn.addEventListener('click', () => {
                 dailyGoalInput.value = targetAmount;
                 settingsModal.classList.add('active');
                 dailyGoalInput.focus();
             });
-
-            cancelSettingsBtn.addEventListener('click', () => {
-                settingsModal.classList.remove('active');
-            });
-
+            cancelSettingsBtn.addEventListener('click', () => settingsModal.classList.remove('active'));
             saveSettingsBtn.addEventListener('click', () => {
-                const newTarget = parseInt(dailyGoalInput.value);
-                if (!isNaN(newTarget) && newTarget > 0) {
-                    targetAmount = newTarget;
+                const newGoal = parseInt(dailyGoalInput.value);
+                if (!isNaN(newGoal) && newGoal > 0) {
+                    targetAmount = newGoal;
                     localStorage.setItem('waterTargetAmount', targetAmount);
                     updateUI();
                     settingsModal.classList.remove('active');
+                } else {
+                    alert('Goal must be greater than 0');
                 }
             });
+            settingsModal.addEventListener('click', (e) => { if (e.target === settingsModal) settingsModal.classList.remove('active'); });
 
-            settingsModal.addEventListener('click', (e) => {
-                if (e.target === settingsModal) {
-                    settingsModal.classList.remove('active');
-                }
+            // быстрые кнопки
+            addButtons.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const amt = parseInt(btn.getAttribute('data-amount'));
+                    if (!isNaN(amt)) addWater(amt);
+                });
             });
 
-            // Undo function
-            function undoEntry(index) {
-                const entry = history[index];
-                currentAmount -= entry.amount;
-                history.splice(index, 1);
-
-                localStorage.setItem('waterCurrentAmount', currentAmount);
-                localStorage.setItem('waterHistory', JSON.stringify(history));
-                updateUI();
-                updateHistory();
-            }
-
-            // Handle undo clicks
-            document.addEventListener('click', function (e) {
-                if (e.target.classList.contains('undo-btn')) {
-                    const index = parseInt(e.target.getAttribute('data-index'));
-                    undoEntry(index);
-                }
-            });
-
-            // Initialize
+            // инициализация
             updateUI();
-            updateHistory();
-        });
+            renderHistoryAsCard();
+        })();
     </script>
 </body>
 </html>
-
